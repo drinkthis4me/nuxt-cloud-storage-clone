@@ -5,10 +5,91 @@
 
 generator client {
   provider      = "prisma-client"
-  output        = "../generated"
+  output        = "./generated"
   compilerBuild = "small"
 }
 
 datasource db {
   provider = "sqlite"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+
+  files  File[]
+  shares Share[]
+
+  @@index([email])
+}
+
+model File {
+  id             String     @id @default(nanoid())
+  ownerId        Int
+  user           User      @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  name           String
+  mimeType       String
+  size           BigInt
+  fingerprint    String
+  storageKey     String
+  status         FileStatus @default(UPLOADING)
+  isFolder       Boolean    @default(false)
+  parentFolderId String?
+  parent         File?      @relation("FolderContents", fields: [parentFolderId], references: [id], onDelete: Cascade)
+  children       File[]     @relation("FolderContents")
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  version        Int        @default(1)
+
+  fileChunks FileChunk[]
+  shares     Share[]
+
+  @@index([fingerprint])
+  @@index([ownerId])
+  @@index([parentFolderId])
+}
+
+enum FileStatus {
+  UPLOADING
+  UPLOADED
+  DELETED
+}
+
+model FileChunk {
+  id         String      @id @default(nanoid())
+  fileId     String
+  file       File        @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  partNumber Int
+  etag       String?
+  status     ChunkStatus @default(PENDING)
+
+  @@unique([fileId, partNumber])
+  @@index([fileId])
+}
+
+enum ChunkStatus {
+  PENDING
+  UPLOADING
+  UPLOADED
+}
+
+model Share {
+  userId     Int
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fileId     String
+  file       File            @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  permission SharePermission @default(VIEW)
+  createdAt  DateTime        @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id(fields: [userId, fileId])
+}
+
+enum SharePermission {
+  VIEW
+  EDIT
 }
