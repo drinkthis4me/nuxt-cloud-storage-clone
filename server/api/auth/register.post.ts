@@ -1,6 +1,6 @@
 import { userCreateSchema } from '#shared/schemas/user'
 import { readValidatedBodyWithSchema } from '#server/utils/readValidatedBodyWithSchema'
-import { prismaClient } from '#server/utils/prisma'
+import { usePrismaClient } from '#server/utils/prisma'
 import { Prisma } from '@@/prisma/generated/client'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
 
@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBodyWithSchema(event, userCreateSchema)
 
   try {
+    const prismaClient = usePrismaClient()
+
     const hashedPassword = await hashPassword(body.password)
 
     const user = await prismaClient.user.create({

@@ -27,6 +27,11 @@ export const CONFLICT = {
   statusText: 'Conflict',
   message: 'Conflict',
 }
+export const UNPROCESSABLE_CONTENT = {
+  status: 409,
+  statusText: 'Unprocessable Content',
+  message: 'Unprocessable Content',
+}
 
 export const INTERNAL_SERVER_ERROR = {
   status: 500,
@@ -40,5 +45,6 @@ export const HTTP_STATUS = {
   FORBIDDEN,
   NOT_FOUND,
   CONFLICT,
+  UNPROCESSABLE_CONTENT,
   INTERNAL_SERVER_ERROR,
 }

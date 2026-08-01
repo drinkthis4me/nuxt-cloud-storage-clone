@@ -1,6 +1,6 @@
 import { readValidatedBodyWithSchema } from '#server/utils/readValidatedBodyWithSchema'
 import { userLoginSchema } from '#shared/schemas/user'
-import { prismaClient } from '#server/utils/prisma'
+import { usePrismaClient } from '#server/utils/prisma'
 import { verifyPassword } from '#imports'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
 
@@ -8,6 +8,7 @@ export default defineEventHandler(async (event) => {
   const body = await readValidatedBodyWithSchema(event, userLoginSchema)
 
   try {
+    const prismaClient = usePrismaClient()
     const user = await prismaClient.user.findFirst({
       where: {
         email: body.email,
@@ -30,7 +31,7 @@ export default defineEventHandler(async (event) => {
       user: {
         id: user.id,
         email: user.email,
-        name: user.name,
+        name: user.name ?? null,
       },
       loggedInAt: new Date(),
     })

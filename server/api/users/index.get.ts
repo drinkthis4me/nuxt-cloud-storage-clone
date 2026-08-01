@@ -1,10 +1,12 @@
-import { prismaClient } from '#server/utils/prisma'
+import { usePrismaClient } from '#server/utils/prisma'
 import { INTERNAL_SERVER_ERROR } from '#server/utils/httpStatus'
 
 export default defineEventHandler(async (event) => {
   await requireUserSession(event)
 
   try {
+    const prismaClient = usePrismaClient()
+
     const users = await prismaClient.user.findMany({
       where: { isActive: true },
       omit: { password: true },

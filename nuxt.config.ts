@@ -10,6 +10,22 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
 
   css: ['~/assets/css/main.css'],
+
+  runtimeConfig: {
+    minio: {
+      accessKey: process.env.MINIO_ACCESS_KEY,
+      secretKey: process.env.MINIO_SECRET_KEY,
+      bucket: process.env.MINIO_BUCKET,
+      endpoint: process.env.MINIO_ENDPOINT,
+      region: process.env.MINIO_REGION,
+    },
+    databaseUrl: process.env.DATABASE_URL,
+
+    public: {
+      appUrl: 'http://localhost:3000', // can be overridden by NUXT_PUBLIC_API_BASE environment variable
+    },
+  },
+
   compatibilityDate: '2025-07-15',
 
   eslint: {
