@@ -1,14 +1,15 @@
-import { getValidatedRouterParamsWithSchema } from '#server/utils/getValidatedRouterParamsWithSchema'
-import { fileIdSchema, fileStatus } from '~~/shared/schemas/file'
-import { usePrismaClient } from '#server/utils/prisma'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
+import { usePrismaClient } from '#server/utils/prisma'
+import { validateRequest } from '#server/utils/validateRequest'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
+import { serializeFile } from '~~/server/utils/serializeFile'
+import { fileIdSchema, fileStatus } from '~~/shared/schemas/file'
 
 import type { File } from '~~/prisma/generated/client'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireUserSession(event)
-  const { id: fileId } = await getValidatedRouterParamsWithSchema(event, fileIdSchema)
+  const { id: fileId } = await validateRequest(event, getValidatedRouterParams, fileIdSchema)
 
   const prismaClient = usePrismaClient()
   let file: File | null
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event) => {
   }
 
   if (file.status === fileStatus.UPLOADED) {
-    return { file }
+    return { file: serializeFile(file) }
   }
 
   // Verify the object actually landed in MinIO — never trust the client alone
@@ -75,7 +76,7 @@ export default defineEventHandler(async (event) => {
       data: { status: fileStatus.UPLOADED },
     })
 
-    return { file: updated }
+    return { file: serializeFile(updated) }
   }
   catch (err: unknown) {
     console.log(err)

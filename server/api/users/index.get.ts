@@ -1,5 +1,5 @@
-import { usePrismaClient } from '#server/utils/prisma'
 import { INTERNAL_SERVER_ERROR } from '#server/utils/httpStatus'
+import { usePrismaClient } from '#server/utils/prisma'
 
 export default defineEventHandler(async (event) => {
   await requireUserSession(event)

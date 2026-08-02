@@ -1,13 +1,15 @@
-import { z } from 'zod'
 import { BAD_REQUEST } from '#server/utils/httpStatus'
+import { z } from 'zod'
 
 import type { H3Event } from 'h3'
 import type { ZodType } from 'zod'
 
-export const readValidatedBodyWithSchema = async <
+type ValidateFn = typeof getValidatedRouterParams | typeof readValidatedBody | typeof getValidatedQuery
+
+export const validateRequest = async <
   T extends ZodType,
-> (event: H3Event, schema: T): Promise<z.infer<T>> => {
-  const parsed = await readValidatedBody(event, body => schema.safeParse(body))
+> (event: H3Event, validateFn: ValidateFn, schema: T): Promise<z.infer<T>> => {
+  const parsed = await validateFn(event, params => schema.safeParse(params))
 
   if (!parsed.success) {
     throw createError({

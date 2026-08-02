@@ -1,11 +1,11 @@
-import { readValidatedBodyWithSchema } from '#server/utils/readValidatedBodyWithSchema'
-import { userLoginSchema } from '#shared/schemas/user'
-import { usePrismaClient } from '#server/utils/prisma'
 import { verifyPassword } from '#imports'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
+import { usePrismaClient } from '#server/utils/prisma'
+import { validateRequest } from '#server/utils/validateRequest'
+import { userLoginSchema } from '#shared/schemas/user'
 
 export default defineEventHandler(async (event) => {
-  const body = await readValidatedBodyWithSchema(event, userLoginSchema)
+  const body = await validateRequest(event, readValidatedBody, userLoginSchema)
 
   try {
     const prismaClient = usePrismaClient()

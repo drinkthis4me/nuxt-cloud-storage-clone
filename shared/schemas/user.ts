@@ -26,3 +26,4 @@ export const userLoginSchema = z.object({
   email,
   password,
 })
+export type UserLoginSchema = z.output<typeof userLoginSchema>

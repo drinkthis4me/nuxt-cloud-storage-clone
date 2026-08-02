@@ -1,11 +1,11 @@
-import { userCreateSchema } from '#shared/schemas/user'
-import { readValidatedBodyWithSchema } from '#server/utils/readValidatedBodyWithSchema'
-import { usePrismaClient } from '#server/utils/prisma'
-import { Prisma } from '@@/prisma/generated/client'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
+import { usePrismaClient } from '#server/utils/prisma'
+import { validateRequest } from '#server/utils/validateRequest'
+import { userCreateSchema } from '#shared/schemas/user'
+import { Prisma } from '@@/prisma/generated/client'
 
 export default defineEventHandler(async (event) => {
-  const body = await readValidatedBodyWithSchema(event, userCreateSchema)
+  const body = await validateRequest(event, readValidatedBody, userCreateSchema)
 
   try {
     const prismaClient = usePrismaClient()

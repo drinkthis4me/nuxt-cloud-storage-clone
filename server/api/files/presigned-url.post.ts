@@ -1,16 +1,17 @@
-import { readValidatedBodyWithSchema } from '#server/utils/readValidatedBodyWithSchema'
-import { useS3Client } from '~~/server/utils/s3'
-import { usePrismaClient } from '~~/server/utils/prisma'
-import { fileMetadataSchema, fileStatus } from '#shared/schemas/file'
-import { getStorageKey } from '~~/server/utils/getStorageKey'
+import { HTTP_STATUS } from '#server/utils/httpStatus'
+import { validateRequest } from '#server/utils/validateRequest'
+import { fileSchema, fileStatus } from '#shared/schemas/file'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { HTTP_STATUS } from '#server/utils/httpStatus'
+import { getStorageKey } from '~~/server/utils/getStorageKey'
+import { usePrismaClient } from '~~/server/utils/prisma'
+import { useS3Client } from '~~/server/utils/s3'
+import { serializeFile } from '~~/server/utils/serializeFile'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireUserSession(event)
 
-  const body = await readValidatedBodyWithSchema(event, fileMetadataSchema)
+  const body = await validateRequest(event, readValidatedBody, fileSchema)
 
   try {
     const prismaClient = usePrismaClient()
@@ -25,7 +26,7 @@ export default defineEventHandler(async (event) => {
     if (existing) {
       return {
         duplicate: true,
-        file: existing,
+        file: serializeFile(existing),
       }
     }
 
