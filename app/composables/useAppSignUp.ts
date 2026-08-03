@@ -1,9 +1,9 @@
-import { userLoginSchema } from '#shared/schemas/user'
+import { userCreateSchema } from '~~/shared/schemas/user'
 
-import type { UserLoginSchema } from '#shared/schemas/user'
+import type { UserCreateSchema } from '~~/shared/schemas/user'
 
-export const useAppLogIn = () => {
-  const form = reactive<UserLoginSchema>({
+export const useAppSignUp = () => {
+  const form = reactive<Partial<UserCreateSchema>>({
     email: '',
     password: '',
   })
@@ -12,12 +12,13 @@ export const useAppLogIn = () => {
   const { fetch: fetchSession } = useUserSession()
   const toast = useToast()
 
-  const login = async (body: UserLoginSchema) => {
+  const signup = async (body: UserCreateSchema) => {
     isLoading.value = true
-    try {
-      const validBody = userLoginSchema.parse(body)
 
-      const res = await $fetch('/api/auth/login', {
+    try {
+      const validBody = userCreateSchema.parse(body)
+
+      const res = await $fetch('/api/auth/register', {
         method: 'POST',
         body: validBody,
       })
@@ -32,7 +33,7 @@ export const useAppLogIn = () => {
       toast.add({
         color: 'error',
         title: 'Error',
-        description: 'Wrong email or password',
+        description: 'Sign up failed. Try again later.',
       })
     }
     finally {
@@ -43,6 +44,6 @@ export const useAppLogIn = () => {
   return {
     form,
     isLoading,
-    login,
+    signup,
   }
 }

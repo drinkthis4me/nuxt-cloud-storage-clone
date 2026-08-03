@@ -21,6 +21,7 @@ export const userCreateSchema = z.object({
   password: password.min(8, 'Password must be at least 8 characters'),
   name: name.optional(),
 })
+export type UserCreateSchema = z.output<typeof userCreateSchema>
 
 export const userLoginSchema = z.object({
   email,
