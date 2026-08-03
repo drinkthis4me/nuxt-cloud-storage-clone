@@ -18,8 +18,8 @@ export const useAppLogOut = () => {
 
       if (!loggedIn) return
 
-      await clearSession()
-      await navigateTo('/')
+      clearSession()
+      navigateTo('/')
     }
     catch (err) {
       console.log(err)

@@ -1,6 +1,24 @@
+<script setup lang="ts">
+definePageMeta({
+  layout: 'dashboard',
+  middleware: 'auth',
+})
+</script>
+
 <template>
-  <div>
-    <h1>APP</h1>
-    <NuxtLink to="/">Home</NuxtLink>
-  </div>
+  <UDashboardPanel id="overview">
+    <template #header>
+      <UDashboardNavbar title="Overview">
+        <template #leading>
+          <UDashboardSidebarCollapse />
+        </template>
+      </UDashboardNavbar>
+    </template>
+
+    <template #body>
+      <div class="">
+        app overview
+      </div>
+    </template>
+  </UDashboardPanel>
 </template>

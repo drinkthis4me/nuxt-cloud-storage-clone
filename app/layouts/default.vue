@@ -1,6 +1,6 @@
 <template>
   <UApp>
-    <AppHeader />
+    <HomeHeader />
     <UMain>
       <slot />
     </UMain>
