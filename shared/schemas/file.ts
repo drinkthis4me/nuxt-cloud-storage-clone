@@ -38,6 +38,7 @@ export const folderSchema = z.object({
   name,
   parentFolderId,
 })
+export type FolderSchema = z.output<typeof folderSchema>
 
 export const fileIdSchema = z.object({
   id,

@@ -44,6 +44,7 @@ async function onSubmit(e: FormSubmitEvent<UserLoginSchema>) {
         >
           <UInput
             v-model="form.email"
+            size="2xl"
             :disabled="isLoading"
             class="w-full"
           />
@@ -55,6 +56,7 @@ async function onSubmit(e: FormSubmitEvent<UserLoginSchema>) {
         >
           <UInput
             v-model="form.password"
+            size="2xl"
             type="password"
             :disabled="isLoading"
             class="w-full"

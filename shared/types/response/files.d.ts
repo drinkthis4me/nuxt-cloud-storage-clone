@@ -34,3 +34,7 @@ export type CreateFileResponse = CreateFolderResponse | CreateFileUploadResponse
 export interface CompleteUploadResponse {
   file: SerializedFile
 }
+
+export interface FileListResponse {
+  files: SerializedFile[]
+}

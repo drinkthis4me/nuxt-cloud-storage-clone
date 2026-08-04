@@ -10,6 +10,7 @@ const input = shallowRef('')
       v-model="input"
       icon="i-lucide-search"
       variant="subtle"
+      size="2xl"
       placeholder="Search files"
       class="w-full"
     />

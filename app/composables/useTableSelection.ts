@@ -50,6 +50,8 @@ export const useTableSelection = <T>(table: Ref<UTableInstance<T> | null>) => {
   const deselectAll = () => {
     rowSelection.value = {}
     lastSelectedRowId.value = null
+
+    // TODO: esc to deselect
   }
 
   const getRowId = <T extends { id: string }>(row: T) => row.id

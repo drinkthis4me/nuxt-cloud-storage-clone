@@ -75,12 +75,19 @@ const columns: TableColumn<SerializedFile>[] = [
   {
     accessorKey: 'size',
     header: 'Size',
-    cell: ({ row }) => h('span', {}, formatFileSize(row.original.size)),
+    cell: ({ row }) => {
+      const res = row.original.isFolder ? '' : formatFileSize(row.original.size)
+      return h('span', {}, res)
+    },
   },
 ]
 
 useSortable('.table-tbody-class-for-sortablejs', files, {
   animation: 150,
+  sort: false,
+  onChange(e: Event) {
+    console.log(e)
+  },
 })
 
 const table = useTemplateRef<ComponentPublicInstance>('table')

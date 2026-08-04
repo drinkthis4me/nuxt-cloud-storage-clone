@@ -24,8 +24,8 @@ export const useAppLogIn = () => {
 
       console.log(res)
 
-      fetchSession()
-      navigateTo('/app')
+      await fetchSession()
+      await navigateTo('/app')
     }
     catch (err) {
       console.log(err)

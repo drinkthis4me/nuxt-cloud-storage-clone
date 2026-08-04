@@ -84,12 +84,7 @@ const links = [
           }"
         >
           <template #header="{ collapsed }">
-            <UButton
-              variant="soft"
-              icon="i-lucide-plus"
-              :label="collapsed ? undefined :'New'"
-              block
-            />
+            <FileCreateNewButton :collapsed />
           </template>
 
           <template #default="{ collapsed }">

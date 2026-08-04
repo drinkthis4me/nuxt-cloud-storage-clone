@@ -6,6 +6,8 @@ import type { FormSubmitEvent } from '@nuxt/ui'
 <script setup lang="ts">
 import { userCreateSchema } from '~~/shared/schemas/user'
 
+const showPassword = shallowRef(false)
+
 const {
   form,
   isLoading,
@@ -44,6 +46,7 @@ async function onSubmit(e: FormSubmitEvent<UserCreateSchema>) {
         >
           <UInput
             v-model="form.email"
+            size="2xl"
             :disabled="isLoading"
             class="w-full"
           />
@@ -55,10 +58,24 @@ async function onSubmit(e: FormSubmitEvent<UserCreateSchema>) {
         >
           <UInput
             v-model="form.password"
-            type="password"
+            size="2xl"
+            :type="showPassword ? 'text' : 'password'"
             :disabled="isLoading"
             class="w-full"
-          />
+          >
+            <template #trailing>
+              <UButton
+                color="neutral"
+                variant="link"
+                size="sm"
+                :icon="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                :aria-pressed="showPassword"
+                aria-controls="password"
+                @click="showPassword = !showPassword"
+              />
+            </template>
+          </UInput>
         </UFormField>
       </div>
 

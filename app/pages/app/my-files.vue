@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { SerializedFile } from '~~/shared/types/response/files'
+import type { FileListResponse } from '~~/shared/types/response/files'
 
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
 })
 
-const { data } = await useLazyFetch<SerializedFile[]>('/api/files')
+const { data } = await useLazyFetch<FileListResponse>('/api/files?scope=MINE')
 </script>
 
 <template>
@@ -23,7 +23,7 @@ const { data } = await useLazyFetch<SerializedFile[]>('/api/files')
     </template>
 
     <template #body>
-      <FileTable :files="data" />
+      <FileTable :files="data?.files" />
     </template>
   </UDashboardPanel>
 </template>
