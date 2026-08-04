@@ -62,7 +62,5 @@ export default defineEventHandler(async (event) => {
     throw createError({ ...HTTP_STATUS.INTERNAL_SERVER_ERROR })
   }
 
-  return {
-    files: files.map(serializeFile),
-  }
+  return files.map(serializeFile)
 })

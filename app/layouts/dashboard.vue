@@ -9,8 +9,8 @@ const links = [
   [
     {
       label: 'My files',
-      icon: 'i-lucide-house',
-      to: '/app',
+      icon: 'i-lucide-folder',
+      to: '/app/my-files',
     },
     {
       label: 'Favorite',

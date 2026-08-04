@@ -4,7 +4,9 @@ const { user } = useUserSession()
 
 <template>
   <header class="flex items-center justify-between p-4 border-b border-default">
-    <AppLogo />
+    <NuxtLink to="/app">
+      <AppLogo />
+    </NuxtLink>
 
     <AppSearchbar class="w-1/2 mx-10" />
 
