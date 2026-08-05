@@ -4,10 +4,11 @@ import { folderSchema } from '~~/shared/schemas/file'
 import type { FolderSchema } from '~~/shared/schemas/file'
 import type { CreateFolderResponse } from '~~/shared/types/response/files'
 
-export const useDialogCreateFolder = () => {
+export const useCreateFolder = () => {
   const overlay = useOverlay()
+  const toast = useToast()
 
-  const open = async (): Promise<string | null> => {
+  const openDialog = async (): Promise<string | null> => {
     const modal = overlay.create(DialogCreateNewFolder, {
       destroyOnClose: true,
     })
@@ -15,7 +16,7 @@ export const useDialogCreateFolder = () => {
     return modal.open()
   }
 
-  const create = async (body: FolderSchema) => {
+  const createFolder = async (body: FolderSchema) => {
     try {
       const validBody = folderSchema.parse(body)
 
@@ -28,11 +29,27 @@ export const useDialogCreateFolder = () => {
     }
     catch (err) {
       console.log(err)
+      toast.add({
+        color: 'error',
+        title: 'Error',
+        description: 'Failed to create folder. Please try again.',
+      })
+    }
+  }
+
+  const promptAndCreateFolder = async () => {
+    const res = await openDialog()
+
+    if (res) {
+      console.log('New folder name', res)
+      createFolder({
+        name: res,
+        isFolder: true,
+      })
     }
   }
 
   return {
-    open,
-    create,
+    promptAndCreateFolder,
   }
 }

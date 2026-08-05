@@ -5,26 +5,23 @@ defineProps<{
   collapsed: boolean
 }>()
 
-const { open: openDialog, create: createFolder } = useDialogCreateFolder()
-
-const handleFolderCreation = async () => {
-  const res = await openDialog()
-
-  if (res) {
-    console.log('New folder name', res)
-    createFolder({
-      name: res,
-      isFolder: true,
-    })
-  }
-}
+const { promptAndCreateFolder } = useCreateFolder()
+const { promptAndUploadFile } = useUploadFile()
 
 const dropdownMenuItems = ref<DropdownMenuItem[]>([
   {
     label: 'New folder',
     icon: 'i-lucide-folder',
     onSelect() {
-      handleFolderCreation()
+      promptAndCreateFolder()
+    },
+    class: 'cursor-pointer',
+  },
+  {
+    label: 'New File',
+    icon: 'i-lucide-file',
+    onSelect() {
+      promptAndUploadFile()
     },
     class: 'cursor-pointer',
   },

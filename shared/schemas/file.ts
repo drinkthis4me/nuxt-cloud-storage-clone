@@ -18,10 +18,10 @@ export const sharePermission = {
 } as const
 
 const id = z.uuid({ version: 'v4' })
-const name = z.string().min(1).max(255)
+const name = z.string().trim().min(1, 'Required').max(255, 'Too long. Max length: 255 characters.')
 const mimeType = z.string().min(1)
-const size = z.coerce.bigint().positive()
-const fingerprint = z.string().length(64) // sha256 hex
+const size = z.int().nonnegative().max(500 * 1024 * 1024, 'File exceeds 500MB limit.')
+const fingerprint = z.string().length(64, 'Invalid SHA-256 fingerprint')
 const parentFolderId = z.string().nullable().optional()
 
 export const fileSchema = z.object({
@@ -32,6 +32,7 @@ export const fileSchema = z.object({
   fingerprint,
   parentFolderId,
 })
+export type FileSchema = z.output<typeof fileSchema>
 
 export const folderSchema = z.object({
   isFolder: z.literal(true),

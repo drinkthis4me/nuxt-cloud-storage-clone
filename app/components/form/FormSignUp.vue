@@ -43,6 +43,7 @@ async function onSubmit(e: FormSubmitEvent<UserCreateSchema>) {
         <UFormField
           label="Email"
           name="email"
+          required
         >
           <UInput
             v-model="form.email"
@@ -55,6 +56,7 @@ async function onSubmit(e: FormSubmitEvent<UserCreateSchema>) {
         <UFormField
           label="Password"
           name="password"
+          required
         >
           <UInput
             v-model="form.password"

@@ -40,13 +40,15 @@ const onSubmit = (e: FormSubmitEvent<FolderSchema>) => {
         class=""
         @submit.prevent="onSubmit"
       >
-        <UInput
-          v-model="form.name"
-          size="2xl"
-          autofocus
-          required
-          class="w-full"
-        />
+        <UFormField name="file-name">
+          <UInput
+            id="file-name"
+            v-model="form.name"
+            size="2xl"
+            autofocus
+            class="w-full"
+          />
+        </UFormField>
 
         <button
           type="submit"
