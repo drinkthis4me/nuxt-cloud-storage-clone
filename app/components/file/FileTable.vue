@@ -82,14 +82,6 @@ const columns: TableColumn<SerializedFile>[] = [
   },
 ]
 
-useSortable('.table-tbody-class-for-sortablejs', files, {
-  animation: 150,
-  sort: false,
-  onChange(e: Event) {
-    console.log(e)
-  },
-})
-
 const table = useTemplateRef<ComponentPublicInstance>('table')
 
 const {
@@ -103,6 +95,10 @@ const {
   contextMenuItems,
   onContextMenu,
 } = useTableContextMenu()
+
+const { moveFiles } = useFileMove()
+const { sortableOptions } = useTableDragToFolder(table, rowSelection, moveFiles)
+useSortable('.table-tbody-class-for-sortablejs', () => files, sortableOptions)
 </script>
 
 <template>

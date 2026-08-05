@@ -1,16 +1,7 @@
 import { ref } from 'vue'
 
 import type { TableRow } from '@nuxt/ui'
-import type { ComponentPublicInstance } from 'vue'
-import type { Row } from '@tanstack/vue-table'
-
-interface UTableInstance<T> extends ComponentPublicInstance {
-  tableApi?: {
-    getRowModel: () => {
-      rows: Row<T>[]
-    }
-  }
-}
+import type { UTableInstance } from '~/types/UTableInstance'
 
 export const useTableSelection = <T>(table: Ref<UTableInstance<T> | null>) => {
   const rowSelection = ref<Record<string, boolean>>({})
