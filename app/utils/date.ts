@@ -8,17 +8,17 @@ const formatter = new DateFormatter('en-US', {
   timeZone: localTimeZone,
 })
 
-export const isoToLocalDateTime = (isoString: string): string => {
-  let res = ''
+export const isoToLocalDateTime = (isoString: string | null): string => {
+  if (isoString === null) return 'N/A'
 
   try {
     const dateTime = parseAbsolute(isoString, localTimeZone)
     const jsDate = dateTime.toDate()
-    res = formatter.format(jsDate)
+    return formatter.format(jsDate)
   }
   catch (err) {
     console.log(err)
-  }
 
-  return res
+    return isoString
+  }
 }

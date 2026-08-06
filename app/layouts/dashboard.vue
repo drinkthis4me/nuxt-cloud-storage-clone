@@ -33,9 +33,9 @@ const links = [
       to: '/app',
     },
     {
-      label: 'Trash',
+      label: 'Trash bin',
       icon: 'i-lucide-trash',
-      to: '/app',
+      to: '/app/trash',
     },
   ],
   [

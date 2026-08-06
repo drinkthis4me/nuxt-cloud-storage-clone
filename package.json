@@ -8,6 +8,8 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare && prisma generate",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate-dev": "node scripts/prisma-migrate-dev.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },

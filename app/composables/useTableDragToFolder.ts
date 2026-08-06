@@ -2,6 +2,7 @@ import type { Ref } from 'vue'
 import type { SerializedFile } from '~~/shared/types/response/files'
 import type { SortableDragEvent } from '~/types/sortable'
 import type { UTableInstance } from '~/types/UTableInstance'
+import type { UseSortableOptions } from '@vueuse/integrations'
 
 // TODO: add class to drop target
 // const DROP_TARGET_CLASS = ['ring-2', 'ring-primary', 'bg-primary/15']
@@ -134,7 +135,7 @@ export function useTableDragToFolder(
       // Call API
       await onMoveFiles(idsToMove, targetFolderId)
     },
-  }
+  } as UseSortableOptions
 
   return { sortableOptions }
 }

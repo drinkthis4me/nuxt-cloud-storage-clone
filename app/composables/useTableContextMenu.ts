@@ -1,10 +1,20 @@
 import type { ContextMenuItem, TableRow } from '@nuxt/ui'
 import type { SerializedFile } from '~~/shared/types/response/files'
 
-export const useTableContextMenu = () => {
+interface useTableContextMenuOption {
+  table?: 'default' | 'trash-bin'
+}
+
+export const useTableContextMenu = (options: useTableContextMenuOption = {}) => {
+  const {
+    table = 'default',
+  } = options
+
   const contextMenuItems = ref<ContextMenuItem[]>([])
 
   const { download } = useDownloadFile()
+  const { softDelete, hardDelete } = useDeleteFile()
+  const { restore } = useRestoreFile()
 
   const getRowItems = (row: TableRow<SerializedFile>): ContextMenuItem[] => {
     const downloadButton = {
@@ -16,7 +26,7 @@ export const useTableContextMenu = () => {
     }
 
     const items = [
-      // Only supports download files (for now)
+      // Only supports download single file, not folders (for now)
       ...(row.original.isFolder ? [] : [downloadButton]),
       {
         label: 'Rename',
@@ -42,17 +52,40 @@ export const useTableContextMenu = () => {
       },
       {
         label: 'Move to trash bin',
-        color: 'error' as const,
         icon: 'i-lucide-trash',
-        onSelect() {},
+        onSelect() {
+          softDelete(row.original.id)
+        },
       },
     ]
 
     return items
   }
 
-  const onContextMenu = (_e: Event, row: TableRow<SerializedFile>) => {
-    contextMenuItems.value = getRowItems(row)
+  const getTrashRowItems = (row: TableRow<SerializedFile>): ContextMenuItem[] => {
+    return [
+      {
+        label: 'Restore',
+        icon: 'i-lucide-file-symlink',
+        async onSelect() {
+          restore(row.original.id)
+        },
+      },
+      {
+        label: 'Permanent delete',
+        color: 'error' as const,
+        icon: 'i-lucide-trash-2',
+        async onSelect() {
+          hardDelete(row.original.id, row.original.name)
+        },
+      },
+    ]
+  }
+
+  const onContextMenu = (_e: Event, row: TableRow<SerializedFile>): void => {
+    contextMenuItems.value = table === 'default'
+      ? getRowItems(row)
+      : getTrashRowItems(row)
   }
 
   return {

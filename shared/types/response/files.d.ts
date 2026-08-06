@@ -16,6 +16,7 @@ export interface SerializedFile {
   parentFolderId: string | null
   createdAt: string
   updatedAt: string
+  deletedAt: string | null
   version: number
 }
 
@@ -42,4 +43,19 @@ export interface FileListResponse {
 export interface DownloadUrlResponse {
   downloadUrl: string
   expiresIn: number
+}
+
+export interface SoftDeleteFileResponse {
+  file: SerializedFile
+}
+
+export interface HardDeleteFileResponse {
+  id: string
+  deleted: true
+}
+
+export type DeleteFileResponse = SoftDeleteFileResponse | HardDeleteFileResponse
+
+export interface RestoreFileResponse {
+  file: SerializedFile
 }

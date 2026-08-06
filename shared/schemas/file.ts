@@ -1,5 +1,8 @@
 import { z } from 'zod'
 
+// NOTE:
+// 'trash': 'DELETED'
+// Not 'trash': 'UPLOADING' AND 'UPLOADED'
 export const fileStatus = {
   UPLOADING: 'UPLOADING',
   UPLOADED: 'UPLOADED',
@@ -47,5 +50,10 @@ export const fileIdSchema = z.object({
 
 export const fileListSchema = z.object({
   parentFolderId,
-  scope: z.enum(Object.keys(fileScope)).default('mine'),
+  scope: z.enum(Object.keys(fileScope)).default('MINE'),
+  status: z.enum(Object.keys(fileStatus)).default('UPLOADED'),
+})
+
+export const deleteFileSchema = z.object({
+  permanent: z.boolean().default(false),
 })

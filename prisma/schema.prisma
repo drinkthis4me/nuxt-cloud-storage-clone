@@ -43,6 +43,7 @@ model File {
   children       File[]     @relation("FolderContents")
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
+  deletedAt      DateTime?
   version        Int        @default(1)
 
   fileChunks FileChunk[]

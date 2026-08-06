@@ -5,7 +5,6 @@ import type { ComponentPublicInstance } from 'vue'
 </script>
 
 <script setup lang="ts">
-import { useSortable } from '@vueuse/integrations/useSortable'
 import { Icon, UCheckbox, UTable } from '#components'
 import { getFileIcon } from '~~/app/utils/getFileIcon'
 import { isoToLocalDateTime } from '~~/app/utils/date'
@@ -27,14 +26,14 @@ const columns: TableColumn<SerializedFile>[] = [
           ? 'indeterminate'
           : table.getIsAllPageRowsSelected(),
         'onUpdate:modelValue': (value: unknown) =>
-          table.toggleAllPageRowsSelected(!!value), // value:  boolean | 'indeterminate'
+          table.toggleAllPageRowsSelected(!!value), // value: boolean | 'indeterminate'
         'aria-label': 'Select all',
       }),
     cell: ({ row }) =>
       h(UCheckbox, {
         'modelValue': row.getIsSelected(),
         'onUpdate:modelValue': (value: unknown) =>
-          row.toggleSelected(!!value), // value:  boolean | 'indeterminate'
+          row.toggleSelected(!!value), // value: boolean | 'indeterminate'
         'aria-label': 'Select row',
         'onClick': (e: Event) => e.stopPropagation(),
       }),
@@ -60,14 +59,22 @@ const columns: TableColumn<SerializedFile>[] = [
     header: 'Type',
   },
   {
+    accessorKey: 'deletedAt',
+    header: 'Trashed Timestamp',
+    cell: ({ row }) => {
+      const formatted = isoToLocalDateTime(row.original.deletedAt)
+      return h('span', {}, formatted)
+    },
+  },
+  {
     accessorKey: 'updatedAt',
     header: 'Last Modified',
-    meta: {
-      class: {
-        th: 'text-right',
-        td: 'text-right font-medium',
-      },
-    },
+    // meta: {
+    //   class: {
+    //     th: 'text-right',
+    //     td: 'text-right font-medium',
+    //   },
+    // },
     cell: ({ row }) => {
       const formatted = isoToLocalDateTime(row.original.updatedAt)
       return h('span', {}, formatted)
@@ -83,7 +90,7 @@ const columns: TableColumn<SerializedFile>[] = [
   },
 ]
 
-const table = useTemplateRef<ComponentPublicInstance>('table')
+const table = useTemplateRef<ComponentPublicInstance>('trash-table')
 
 const {
   rowSelection,
@@ -95,11 +102,7 @@ const {
 const {
   contextMenuItems,
   onContextMenu,
-} = useTableContextMenu()
-
-const { moveFiles } = useFileMove()
-const { sortableOptions } = useTableDragToFolder(table, rowSelection, moveFiles)
-useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
+} = useTableContextMenu({ table: 'trash-bin' })
 </script>
 
 <template>
@@ -109,13 +112,12 @@ useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
   >
     <UContextMenu :items="contextMenuItems">
       <UTable
-        ref="table"
+        ref="trash-table"
         v-model:row-selection="rowSelection"
         :data="files"
         :columns="columns"
         :get-row-id="getRowId"
         :ui="{
-          tbody: 'table-tbody-class-for-sortablejs',
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',
         }"
         class=""

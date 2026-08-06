@@ -5,24 +5,36 @@ import { validateRequest } from '#server/utils/validateRequest'
 import { fileListSchema, fileScope } from '#shared/schemas/file'
 import { fileStatus } from '~~/shared/schemas/file'
 
+import type { File } from '~~/prisma/generated/client'
+
 export default defineEventHandler(async (event) => {
   const { user } = await requireUserSession(event)
   const query = await validateRequest(event, getValidatedQuery, fileListSchema)
 
   // null/omitted parentFolderId = root level
   const parentFolderId = query.parentFolderId ?? null
+  const isTrashView = query.status === fileStatus.DELETED
+
   const prismaClient = usePrismaClient()
-  let files
+  let files: File[] | null
 
   try {
     if (query.scope === fileScope.MINE) {
       files = await prismaClient.file.findMany({
         where: {
           ownerId: user.id,
+
           parentFolderId,
-          status: { not: fileStatus.DELETED },
+
+          status: isTrashView
+            ? fileStatus.DELETED
+            : { not: fileStatus.DELETED },
+
+          ...(isTrashView ? {} : { parentFolderId }),
         },
-        orderBy: [{ isFolder: 'desc' }, { name: 'asc' }],
+        orderBy: isTrashView
+          ? [{ deletedAt: 'desc' }]
+          : [{ isFolder: 'desc' }, { name: 'asc' }],
       })
     }
     else if (query.scope === fileScope.SHARED) {
@@ -36,6 +48,8 @@ export default defineEventHandler(async (event) => {
         .filter(file => file.status !== fileStatus.DELETED && file.parentFolderId === parentFolderId)
     }
     else {
+      // 'ALL' scope.
+      // Ignore 'DELETED' status (trash is owner only)
       const [owned, shares] = await Promise.all([
         prismaClient.file.findMany({
           where: {

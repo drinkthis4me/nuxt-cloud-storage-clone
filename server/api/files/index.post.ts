@@ -16,6 +16,7 @@ import type {
   CreateFolderResponse,
 } from '#shared/types/response/files'
 import type { H3Event } from 'h3'
+import type { PrismaClient } from '~~/prisma/generated/client'
 
 const bodySchema = z.discriminatedUnion('isFolder', [folderSchema, fileSchema])
 
@@ -23,21 +24,25 @@ export default defineEventHandler(async (event): Promise<CreateFileResponse> => 
   const { user } = await requireUserSession(event)
   const body = await validateRequest(event, readValidatedBody, bodySchema)
 
+  const prismaClient = usePrismaClient()
+
   if (body.parentFolderId) {
-    await assertParentFolderIsValid(body.parentFolderId, user.id)
+    await assertParentFolderIsValid(body.parentFolderId, user.id, prismaClient)
   }
 
   return body.isFolder
-    ? createFolder(event, body, user.id)
-    : createFileUpload(event, body, user.id)
+    ? createFolder(event, body, user.id, prismaClient)
+    : createFileUpload(event, body, user.id, prismaClient)
 })
 
 /**
  * Shared validation: Check owner and edit permission.
  */
-async function assertParentFolderIsValid(parentFolderId: string, userId: number) {
-  const prismaClient = usePrismaClient()
-
+async function assertParentFolderIsValid(
+  parentFolderId: string,
+  userId: number,
+  prismaClient: PrismaClient,
+) {
   const parent = await prismaClient.file.findUnique({
     where: { id: parentFolderId },
     include: { shares: { where: { userId } } },
@@ -68,9 +73,8 @@ async function createFolder(
   event: H3Event,
   body: z.infer<typeof folderSchema>,
   userId: number,
+  prismaClient: PrismaClient,
 ): Promise<CreateFolderResponse> {
-  const prismaClient = usePrismaClient()
-
   let folder
   try {
     folder = await prismaClient.file.create({
@@ -104,9 +108,9 @@ async function createFileUpload(
   event: H3Event,
   body: z.infer<typeof fileSchema>,
   userId: number,
+  prismaClient: PrismaClient,
 ): Promise<CreateFileUploadResponse> {
-  const prismaClient = usePrismaClient()
-  const config = useRuntimeConfig()
+  const config = useRuntimeConfig(event)
 
   // Dedup check: same user, same content already uploaded
   let existing
