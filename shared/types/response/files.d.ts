@@ -38,3 +38,8 @@ export interface CompleteUploadResponse {
 export interface FileListResponse {
   files: SerializedFile[]
 }
+
+export interface DownloadUrlResponse {
+  downloadUrl: string
+  expiresIn: number
+}

@@ -47,6 +47,8 @@ export const useUploadFile = () => {
 
       if (!uploadUrl) throw new Error('No upload url')
 
+      // TODO: compress before upload
+      // TODO: chunking
       await $fetch(uploadUrl, {
         method: 'PUT',
         body: file,

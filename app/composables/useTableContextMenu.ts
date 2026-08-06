@@ -4,14 +4,20 @@ import type { SerializedFile } from '~~/shared/types/response/files'
 export const useTableContextMenu = () => {
   const contextMenuItems = ref<ContextMenuItem[]>([])
 
-  const getRowItems = (_row: TableRow<SerializedFile>) => {
-    return [
-      {
-        label: 'Download',
-        icon: 'i-lucide-download',
-        onSelect() {
-        },
+  const { download } = useDownloadFile()
+
+  const getRowItems = (row: TableRow<SerializedFile>): ContextMenuItem[] => {
+    const downloadButton = {
+      label: 'Download',
+      icon: 'i-lucide-download',
+      async onSelect() {
+        download(row.id)
       },
+    }
+
+    const items = [
+      // Only supports download files (for now)
+      ...(row.original.isFolder ? [] : [downloadButton]),
       {
         label: 'Rename',
         icon: 'i-lucide-pen-line',
@@ -25,7 +31,6 @@ export const useTableContextMenu = () => {
         label: 'Share',
         icon: 'i-lucide-user-plus',
         onSelect() {
-
         },
       },
       {
@@ -42,6 +47,8 @@ export const useTableContextMenu = () => {
         onSelect() {},
       },
     ]
+
+    return items
   }
 
   const onContextMenu = (_e: Event, row: TableRow<SerializedFile>) => {
