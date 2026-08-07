@@ -11,6 +11,7 @@ export const useAppSignUp = () => {
 
   const { fetch: fetchSession } = useUserSession()
   const toast = useToast()
+  const authStore = useAuthStore()
 
   const signup = async (body: UserCreateSchema) => {
     isLoading.value = true
@@ -25,6 +26,7 @@ export const useAppSignUp = () => {
 
       console.log(res)
 
+      authStore.user = res
       await fetchSession()
       await navigateTo('/app')
     }

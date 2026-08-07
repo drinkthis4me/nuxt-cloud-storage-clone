@@ -1,9 +1,8 @@
+import type { UserModel } from '~~/prisma/generated/models'
+
+export type User = Pick<UserModel, 'id' | 'email' | 'name'>
+
 declare module '#auth-utils' {
-  interface User {
-    id: number
-    email: string
-    name: string | null
-  }
 
   interface UserSession {
     user: User
@@ -15,3 +14,8 @@ declare module '#auth-utils' {
 }
 
 export {}
+
+export interface LoginResponse {
+  success: true
+  user: User
+}

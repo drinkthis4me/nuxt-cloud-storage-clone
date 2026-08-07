@@ -1,6 +1,7 @@
 import { userLoginSchema } from '#shared/schemas/user'
 
 import type { UserLoginSchema } from '#shared/schemas/user'
+import type { LoginResponse } from '#shared/types/auth'
 
 export const useAppLogIn = () => {
   const form = reactive<UserLoginSchema>({
@@ -11,18 +12,21 @@ export const useAppLogIn = () => {
 
   const { fetch: fetchSession } = useUserSession()
   const toast = useToast()
+  const authStore = useAuthStore()
 
   const login = async (body: UserLoginSchema) => {
     isLoading.value = true
     try {
       const validBody = userLoginSchema.parse(body)
 
-      const res = await $fetch('/api/auth/login', {
+      const res = await $fetch<LoginResponse>('/api/auth/login', {
         method: 'POST',
         body: validBody,
       })
 
       console.log(res)
+
+      authStore.user = res.user
 
       await fetchSession()
       await navigateTo('/app')

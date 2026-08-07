@@ -4,7 +4,9 @@ import { usePrismaClient } from '#server/utils/prisma'
 import { validateRequest } from '#server/utils/validateRequest'
 import { userLoginSchema } from '#shared/schemas/user'
 
-export default defineEventHandler(async (event) => {
+import type { LoginResponse } from '#shared/types/auth'
+
+export default defineEventHandler(async (event): Promise<LoginResponse> => {
   const body = await validateRequest(event, readValidatedBody, userLoginSchema)
 
   try {
@@ -27,16 +29,21 @@ export default defineEventHandler(async (event) => {
       })
     }
 
+    const userInfo = {
+      id: user.id,
+      email: user.email,
+      name: user.name ?? null,
+    }
+
     await setUserSession(event, {
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name ?? null,
-      },
+      user: userInfo,
       loggedInAt: new Date(),
     })
 
-    return { success: true }
+    return {
+      success: true,
+      user: userInfo,
+    }
   }
   catch (err) {
     console.log(err)

@@ -5,6 +5,7 @@ export default defineNuxtConfig({
     'nuxt-auth-utils',
     '@nuxt/ui',
     '@vueuse/nuxt',
+    '@pinia/nuxt',
   ],
 
   devtools: { enabled: true },

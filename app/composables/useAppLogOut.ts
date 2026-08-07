@@ -8,6 +8,7 @@ export const useAppLogOut = () => {
     clear: clearSession,
   } = useUserSession()
   const toast = useToast()
+  const authStore = useAuthStore()
 
   const logout = async () => {
     isLoading.value = true
@@ -18,6 +19,7 @@ export const useAppLogOut = () => {
 
       if (!loggedIn) return
 
+      authStore.reset()
       clearSession()
       navigateTo('/')
     }
