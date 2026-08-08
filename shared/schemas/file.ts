@@ -1,8 +1,5 @@
 import { z } from 'zod'
 
-// NOTE:
-// 'trash': 'DELETED'
-// Not 'trash': 'UPLOADING' AND 'UPLOADED'
 export const fileStatus = {
   UPLOADING: 'UPLOADING',
   UPLOADED: 'UPLOADED',
@@ -25,7 +22,14 @@ const name = z.string().trim().min(1, 'Required').max(255, 'Too long. Max length
 const mimeType = z.string().min(1)
 const size = z.int().nonnegative().max(500 * 1024 * 1024, 'File exceeds 500MB limit.')
 const fingerprint = z.string().length(64, 'Invalid SHA-256 fingerprint')
-const parentFolderId = z.string().nullable().optional()
+const parentFolderId = id.nullable().optional()
+const statusList = z
+  .xor([z.string(), z.array(z.string())])
+  .transform((val) => {
+    const items = Array.isArray(val) ? val : val.split(',')
+    return items.map(s => s.trim()).filter(Boolean)
+  })
+  .pipe(z.array(z.enum(Object.keys(fileStatus))).min(1))
 
 export const fileSchema = z.object({
   isFolder: z.literal(false),
@@ -51,7 +55,7 @@ export const fileIdSchema = z.object({
 export const fileListSchema = z.object({
   parentFolderId,
   scope: z.enum(Object.keys(fileScope)).default('MINE'),
-  status: z.enum(Object.keys(fileStatus)).default('UPLOADED'),
+  status: statusList.default([fileStatus.UPLOADED, fileStatus.UPLOADING]),
 })
 
 export const deleteFileSchema = z.object({

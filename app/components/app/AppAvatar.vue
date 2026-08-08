@@ -1,22 +1,14 @@
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 
-defineProps<{
-  user: {
-    id: number
-    name: string | null
-    email: string
-  }
-}>()
-
-const { logout } = useAppLogOut()
+const authStore = useAuthStore()
 
 const items = ref<DropdownMenuItem[]>([
   {
     label: 'Sign out',
     icon: 'i-lucide-arrow-big-right-dash',
     onSelect() {
-      logout()
+      authStore.logout()
     },
   },
   {
@@ -29,6 +21,7 @@ const items = ref<DropdownMenuItem[]>([
 <template>
   <div>
     <UDropdownMenu
+      v-if="authStore.loggedIn && authStore.user"
       :items="items"
       :content="{
         align: 'start',
@@ -48,17 +41,23 @@ const items = ref<DropdownMenuItem[]>([
         <UAvatar
           src="https://i.pravatar.cc/300"
           loading="lazy"
+          size="3xl"
         />
 
         <template #content>
           <div class="flex flex-col justify-center">
-            <p v-if="user && user.name">
-              {{ user.name }}
+            <p v-if="authStore.user.name">
+              {{ authStore.user.name }}
             </p>
-            <p>{{ user.email }}</p>
+            <p>{{ authStore.user.email }}</p>
           </div>
         </template>
       </UTooltip>
     </UDropdownMenu>
+
+    <USkeleton
+      v-else
+      class="size-12 rounded-full"
+    />
   </div>
 </template>

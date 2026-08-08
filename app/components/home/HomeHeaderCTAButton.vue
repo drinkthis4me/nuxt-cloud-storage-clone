@@ -1,16 +1,16 @@
 <script setup lang="ts">
 const {
-  loggedIn,
   block = false,
 } = defineProps<{
-  loggedIn: boolean
   block?: boolean
 }>()
+
+const authStore = useAuthStore()
 </script>
 
 <template>
   <UButton
-    v-if="!loggedIn"
+    v-if="!authStore.loggedIn"
     color="primary"
     variant="solid"
     :block

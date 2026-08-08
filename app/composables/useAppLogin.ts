@@ -10,7 +10,6 @@ export const useAppLogIn = () => {
   })
   const isLoading = shallowRef(false)
 
-  const { fetch: fetchSession } = useUserSession()
   const toast = useToast()
   const authStore = useAuthStore()
 
@@ -26,9 +25,10 @@ export const useAppLogIn = () => {
 
       console.log(res)
 
-      authStore.user = res.user
+      form.email = ''
+      form.password = ''
 
-      await fetchSession()
+      await authStore.fetchSession()
       await navigateTo('/app')
     }
     catch (err) {

@@ -7,6 +7,8 @@ import type {
 
 export const useDeleteFile = () => {
   const toast = useToast()
+  const fileTableStore = useFileTableStore()
+  const fileTrashTableStore = useFileTrashTableStore()
 
   const softDelete = async (id: string) => {
     try {
@@ -17,16 +19,18 @@ export const useDeleteFile = () => {
 
       toast.add({
         color: 'success',
-        title: 'Deleted',
+        title: 'File moved to trash bin',
         description: file.name,
       })
+
+      fileTableStore.fetchFiles()
     }
     catch (err) {
       console.log(err)
       toast.add({
         color: 'error',
         title: 'Error',
-        description: 'Delete failed. Please try again.',
+        description: 'Failed to move file to trash bin. Please try again.',
       })
     }
   }
@@ -45,6 +49,8 @@ export const useDeleteFile = () => {
           title: 'Permanent deleted',
           description: name,
         })
+
+        fileTrashTableStore.fetchFiles()
       }
     }
     catch (err) {

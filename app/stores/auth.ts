@@ -1,25 +1,24 @@
-export const useAppLogOut = () => {
-  const isLoading = ref(false)
+export const useAuthStore = defineStore('auth', () => {
+  const isLoading = shallowRef(false)
+
   const {
     ready,
     loggedIn,
-    fetch: fetchSession,
     user,
+    fetch: fetchSession,
     clear: clearSession,
   } = useUserSession()
+
   const toast = useToast()
-  const authStore = useAuthStore()
 
   const logout = async () => {
     isLoading.value = true
     try {
-      if (!ready) {
-        await fetchSession()
-      }
+      if (!ready) fetchSession()
 
       if (!loggedIn) return
 
-      authStore.reset()
+      reset()
       clearSession()
       navigateTo('/')
     }
@@ -36,12 +35,19 @@ export const useAppLogOut = () => {
     }
   }
 
+  const reset = () => {
+  }
+
   return {
     isLoading,
-    ready,
-    loggedIn,
     user,
-
+    loggedIn,
+    fetchSession,
     logout,
+    reset,
   }
+})
+
+if (import.meta.hot) {
+  import.meta.hot.accept(acceptHMRUpdate(useAuthStore, import.meta.hot))
 }

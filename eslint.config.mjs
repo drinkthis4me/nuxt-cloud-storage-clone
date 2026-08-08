@@ -5,4 +5,14 @@ export default withNuxt(
   {
     ignores: ['prisma/**'],
   },
+  {
+    rules: {
+      '@typescript-eslint/no-empty-object-type': [
+        'error',
+        {
+          allowInterfaces: 'with-single-extends',
+        },
+      ],
+    },
+  },
 )

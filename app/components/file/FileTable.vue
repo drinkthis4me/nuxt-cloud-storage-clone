@@ -12,11 +12,8 @@ import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
 import { h, useTemplateRef } from 'vue'
 
-const {
-  files = [],
-} = defineProps<{
-  files?: SerializedFile[]
-}>()
+const fileTableStore = useFileTableStore()
+useAsyncData('my-files', () => fileTableStore.fetchFiles())
 
 const columns: TableColumn<SerializedFile>[] = [
   {
@@ -99,7 +96,7 @@ const {
 
 const { moveFiles } = useFileMove()
 const { sortableOptions } = useTableDragToFolder(table, rowSelection, moveFiles)
-useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
+useSortable('.table-tbody-class-for-sortablejs', fileTableStore.files, sortableOptions)
 </script>
 
 <template>
@@ -111,9 +108,10 @@ useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
       <UTable
         ref="table"
         v-model:row-selection="rowSelection"
-        :data="files"
+        :data="fileTableStore.files"
         :columns="columns"
         :get-row-id="getRowId"
+        :loading="fileTableStore.isLoading"
         :ui="{
           tbody: 'table-tbody-class-for-sortablejs',
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',

@@ -11,11 +11,8 @@ import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
 import { h, useTemplateRef } from 'vue'
 
-const {
-  files = [],
-} = defineProps<{
-  files?: SerializedFile[]
-}>()
+const fileTrashTableStore = useFileTrashTableStore()
+useAsyncData('trash-table', () => fileTrashTableStore.fetchFiles())
 
 const columns: TableColumn<SerializedFile>[] = [
   {
@@ -114,7 +111,8 @@ const {
       <UTable
         ref="trash-table"
         v-model:row-selection="rowSelection"
-        :data="files"
+        :data="fileTrashTableStore.files"
+        :loading="fileTrashTableStore.isLoading"
         :columns="columns"
         :get-row-id="getRowId"
         :ui="{

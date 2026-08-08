@@ -10,6 +10,7 @@ import type {
 export const useUploadFile = () => {
   const overlay = useOverlay()
   const toast = useToast()
+  const fileTableStore = useFileTableStore()
 
   const openDialog = async (): Promise<File | null> => {
     const modal = overlay.create(DialogUploadFile, {
@@ -19,7 +20,7 @@ export const useUploadFile = () => {
     return modal.open()
   }
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (file: File, parentFolderId: string | null = null) => {
     try {
       const fingerprint = await sha256(file)
 
@@ -29,7 +30,7 @@ export const useUploadFile = () => {
         mimeType: file.type || 'application/octet-stream',
         size: file.size,
         fingerprint,
-        parentFolderId: null,
+        parentFolderId,
       }
 
       const validBody = fileSchema.parse(body)
@@ -45,7 +46,9 @@ export const useUploadFile = () => {
 
       if (duplicate) return serverFileEntry
 
-      if (!uploadUrl) throw new Error('No upload url')
+      if (!uploadUrl) throw new Error('Missing upload URL in response')
+
+      fileTableStore.fetchFiles()
 
       // TODO: compress before upload
       // TODO: chunking

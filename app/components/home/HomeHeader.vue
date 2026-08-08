@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 
-const { loggedIn } = useUserSession()
-
 const menuItems = computed<NavigationMenuItem[]>(() => [
   {
     label: 'Features',
@@ -135,8 +133,8 @@ const menuItems = computed<NavigationMenuItem[]>(() => [
 
     <template #right>
       <div class="hidden md:flex gap-4 px-4">
-        <HomeHeaderCTAButton :logged-in />
-        <HomeLogInOutButton :logged-in />
+        <HomeHeaderCTAButton />
+        <HomeLogInOutButton />
       </div>
     </template>
 
@@ -148,15 +146,11 @@ const menuItems = computed<NavigationMenuItem[]>(() => [
       />
 
       <HomeHeaderCTAButton
-        :logged-in
         block
         class="mt-5"
       />
 
-      <HomeLogInOutButton
-        :logged-in
-        class="mt-5"
-      />
+      <HomeLogInOutButton class="mt-5" />
     </template>
   </UHeader>
 </template>

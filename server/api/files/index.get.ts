@@ -2,18 +2,18 @@ import { HTTP_STATUS } from '#server/utils/httpStatus'
 import { usePrismaClient } from '#server/utils/prisma'
 import { serializeFile } from '#server/utils/serializeFile'
 import { validateRequest } from '#server/utils/validateRequest'
-import { fileListSchema, fileScope } from '#shared/schemas/file'
-import { fileStatus } from '~~/shared/schemas/file'
+import { fileListSchema, fileScope, fileStatus } from '#shared/schemas/file'
 
 import type { File } from '~~/prisma/generated/client'
+import type { FileStatusEnum } from '#shared/types/response/files'
 
 export default defineEventHandler(async (event) => {
   const { user } = await requireUserSession(event)
   const query = await validateRequest(event, getValidatedQuery, fileListSchema)
 
-  // null/omitted parentFolderId = root level
   const parentFolderId = query.parentFolderId ?? null
-  const isTrashView = query.status === fileStatus.DELETED
+  const status = query.status as FileStatusEnum[]
+  const isTrashView = query.status.length === 1 && query.status[0] === fileStatus.DELETED
 
   const prismaClient = usePrismaClient()
   let files: File[] | null
@@ -26,9 +26,7 @@ export default defineEventHandler(async (event) => {
 
           parentFolderId,
 
-          status: isTrashView
-            ? fileStatus.DELETED
-            : { not: fileStatus.DELETED },
+          status: { in: status },
 
           ...(isTrashView ? {} : { parentFolderId }),
         },

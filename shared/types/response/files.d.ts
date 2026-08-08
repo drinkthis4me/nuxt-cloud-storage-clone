@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import { fileStatus } from '~~/shared/schemas/file'
 
-type FileStatusEnum = keyof typeof fileStatus
+export type FileStatusEnum = keyof typeof fileStatus
 
 export interface SerializedFile {
   id: string

@@ -1,12 +1,8 @@
 <script setup lang="ts">
-import type { FileListResponse } from '~~/shared/types/response/files'
-
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
 })
-
-const { data } = await useLazyFetch<FileListResponse>('/api/files?scope=MINE&status=DELETED')
 </script>
 
 <template>
@@ -25,7 +21,7 @@ const { data } = await useLazyFetch<FileListResponse>('/api/files?scope=MINE&sta
     </template>
 
     <template #body>
-      <FileTrashTable :files="data?.files" />
+      <FileTrashTable />
     </template>
   </UDashboardPanel>
 </template>

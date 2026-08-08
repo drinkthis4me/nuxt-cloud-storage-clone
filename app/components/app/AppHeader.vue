@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const { user } = useUserSession()
 </script>
 
 <template>
@@ -10,9 +9,6 @@ const { user } = useUserSession()
 
     <AppSearchbar class="w-1/2 mx-10" />
 
-    <AppAvatar
-      v-if="user"
-      :user
-    />
+    <AppAvatar />
   </header>
 </template>
