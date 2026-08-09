@@ -35,7 +35,7 @@ export default defineEventHandler(async (event): Promise<DownloadUrlResponse> =>
   const hasShareAccess = file.shares.length > 0 // VIEW or EDIT — either can read
 
   if (!isOwner && !hasShareAccess) {
-    throw createError({ ...HTTP_STATUS.FORBIDDEN, message: 'No access to this file' })
+    throw createError({ ...HTTP_STATUS.NOT_FOUND, message: 'File not found' })
   }
 
   if (file.isFolder) {

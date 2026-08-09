@@ -1,10 +1,14 @@
 <script lang="ts">
 import type { FormSubmitEvent } from '@nuxt/ui'
-import type { FolderSchema } from '#shared/schemas/file'
 </script>
 
 <script setup lang="ts">
-import { folderSchema } from '#shared/schemas/file'
+import { z } from 'zod'
+import { name as nameSchema } from '#shared/schemas/file'
+
+const props = defineProps<{
+  name: string
+}>()
 
 const emit = defineEmits<{
   close: [value: string | null]
@@ -12,13 +16,16 @@ const emit = defineEmits<{
 
 const formRef = useTemplateRef('form')
 
-const form = reactive<Partial<FolderSchema>>({
-  name: 'Unnamed New Folder',
-  isFolder: true,
-  parentFolderId: null,
+const schema = z.object({
+  name: nameSchema,
+})
+type Schema = z.output<typeof schema>
+
+const form = reactive<Schema>({
+  name: props.name,
 })
 
-const onSubmit = (e: FormSubmitEvent<FolderSchema>) => {
+const onSubmit = (e: FormSubmitEvent<Schema>) => {
   emit('close', e.data.name)
 }
 </script>
@@ -30,12 +37,12 @@ const onSubmit = (e: FormSubmitEvent<FolderSchema>) => {
       footer: 'justify-end',
     }"
     :close="{ onClick: () => emit('close', null) }"
-    title="New folder"
+    title="Rename"
   >
     <template #body>
       <UForm
         ref="form"
-        :schema="folderSchema"
+        :schema="schema"
         :state="form"
         class=""
         @submit.prevent="onSubmit"
@@ -71,6 +78,7 @@ const onSubmit = (e: FormSubmitEvent<FolderSchema>) => {
         <UButton
           label="Create"
           size="lg"
+          type="button"
           @click="formRef?.submit()"
         />
       </div>

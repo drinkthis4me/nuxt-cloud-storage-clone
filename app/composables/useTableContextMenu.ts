@@ -3,16 +3,19 @@ import type { SerializedFile } from '~~/shared/types/response/files'
 
 interface useTableContextMenuOption {
   table?: 'default' | 'trash-bin'
+  onRenamed?: (file: SerializedFile) => void
 }
 
 export const useTableContextMenu = (options: useTableContextMenuOption = {}) => {
   const {
     table = 'default',
+    onRenamed,
   } = options
 
   const contextMenuItems = ref<ContextMenuItem[]>([])
 
   const { download } = useDownloadFile()
+  const { promptAndRename } = useRenameFile()
   const { softDelete, hardDelete } = useDeleteFile()
   const { restore } = useRestoreFile()
 
@@ -31,7 +34,11 @@ export const useTableContextMenu = (options: useTableContextMenuOption = {}) => 
       {
         label: 'Rename',
         icon: 'i-lucide-pen-line',
-        onSelect() {
+        async onSelect() {
+          const updated = await promptAndRename(row.original.id, row.original.name)
+          if (updated) {
+            onRenamed?.(updated)
+          }
         },
       },
       {

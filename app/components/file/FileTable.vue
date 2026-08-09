@@ -1,6 +1,6 @@
 <script lang="ts">
-import type { TableColumn } from '@nuxt/ui'
-import type { SerializedFile } from '~~/shared/types/response/files'
+import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { SerializedFile } from '#shared/types/response/files'
 import type { ComponentPublicInstance } from 'vue'
 </script>
 
@@ -12,8 +12,18 @@ import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
 import { h, useTemplateRef } from 'vue'
 
-const fileTableStore = useFileTableStore()
-useAsyncData('my-files', () => fileTableStore.fetchFiles())
+const {
+  files = [],
+  loading,
+} = defineProps<{
+  files?: SerializedFile[]
+  loading: boolean
+}>()
+
+const emit = defineEmits<{
+  moved: []
+  renamed: [file: SerializedFile]
+}>()
 
 const columns: TableColumn<SerializedFile>[] = [
   {
@@ -82,21 +92,33 @@ const columns: TableColumn<SerializedFile>[] = [
 
 const table = useTemplateRef<ComponentPublicInstance>('table')
 
+const onRowDoubleClick = (row: TableRow<SerializedFile>) => {
+  if (row.original.isFolder) {
+    navigateTo(`/app/folders/${row.original.id}`)
+  }
+}
+
 const {
   rowSelection,
   getRowId,
   onSelect,
   deselectAll,
-} = useTableSelection<SerializedFile>(table)
+} = useTableSelection<SerializedFile>(table, onRowDoubleClick)
 
 const {
   contextMenuItems,
   onContextMenu,
-} = useTableContextMenu()
+} = useTableContextMenu({
+  onRenamed: file => emit('renamed', file),
+})
 
-const { moveFiles } = useFileMove()
-const { sortableOptions } = useTableDragToFolder(table, rowSelection, moveFiles)
-useSortable('.table-tbody-class-for-sortablejs', fileTableStore.files, sortableOptions)
+const { moveFiles } = useMoveFile()
+const onMoveFiles = async (fileIds: string[], targetFolderId: string) => {
+  await moveFiles(fileIds, targetFolderId)
+  emit('moved')
+}
+const { sortableOptions } = useTableDragToFolder(table, rowSelection, onMoveFiles)
+useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
 </script>
 
 <template>
@@ -108,10 +130,10 @@ useSortable('.table-tbody-class-for-sortablejs', fileTableStore.files, sortableO
       <UTable
         ref="table"
         v-model:row-selection="rowSelection"
-        :data="fileTableStore.files"
+        :data="files"
         :columns="columns"
         :get-row-id="getRowId"
-        :loading="fileTableStore.isLoading"
+        :loading="loading"
         :ui="{
           tbody: 'table-tbody-class-for-sortablejs',
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',

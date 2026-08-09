@@ -3,22 +3,38 @@ import { ref } from 'vue'
 import type { TableRow } from '@nuxt/ui'
 import type { UTableInstance } from '~/types/UTableInstance'
 
-export const useTableSelection = <T>(table: Ref<UTableInstance<T> | null>) => {
+export const useTableSelection = <T>(
+  table: Ref<UTableInstance<T> | null>,
+  onRowDoubleClick: (row: TableRow<T>) => void = () => {},
+) => {
   const rowSelection = ref<Record<string, boolean>>({})
 
   const lastSelectedRowId = ref<string | null>(null)
 
+  let clickTimeout: NodeJS.Timeout | null = null
+
   const onSelect = (e: Event, row: TableRow<T>) => {
     const mouseEvent = e as MouseEvent
 
-    if (mouseEvent.shiftKey && lastSelectedRowId.value) {
-      selectRange(lastSelectedRowId.value, row.id)
+    if (clickTimeout) {
+      // Double clicked
+      clearTimeout(clickTimeout)
+      clickTimeout = null
+
+      onRowDoubleClick(row)
       return
     }
 
-    row.toggleSelected(!row.getIsSelected())
+    clickTimeout = setTimeout(() => {
+      if (mouseEvent.shiftKey && lastSelectedRowId.value) {
+        selectRange(lastSelectedRowId.value, row.id)
+        return
+      }
 
-    lastSelectedRowId.value = row.id
+      row.toggleSelected(!row.getIsSelected())
+
+      lastSelectedRowId.value = row.id
+    }, 250)
   }
 
   const selectRange = (fromId: string, toId: string) => {

@@ -18,7 +18,7 @@ export const sharePermission = {
 } as const
 
 const id = z.uuid({ version: 'v4' })
-const name = z.string().trim().min(1, 'Required').max(255, 'Too long. Max length: 255 characters.')
+export const name = z.string().trim().min(1, 'Required').max(255, 'Too long. Max length: 255 characters.')
 const mimeType = z.string().min(1)
 const size = z.int().nonnegative().max(500 * 1024 * 1024, 'File exceeds 500MB limit.')
 const fingerprint = z.string().length(64, 'Invalid SHA-256 fingerprint')
@@ -29,7 +29,7 @@ const statusList = z
     const items = Array.isArray(val) ? val : val.split(',')
     return items.map(s => s.trim()).filter(Boolean)
   })
-  .pipe(z.array(z.enum(Object.keys(fileStatus))).min(1))
+  .pipe(z.array(z.enum(Object.values(fileStatus))).min(1))
 
 export const fileSchema = z.object({
   isFolder: z.literal(false),
@@ -54,9 +54,18 @@ export const fileIdSchema = z.object({
 
 export const fileListSchema = z.object({
   parentFolderId,
-  scope: z.enum(Object.keys(fileScope)).default('MINE'),
+  scope: z.enum(Object.values(fileScope)).default(fileScope.MINE),
   status: statusList.default([fileStatus.UPLOADED, fileStatus.UPLOADING]),
 })
+
+export const editFileSchema = z
+  .object({
+    name: name.optional(),
+    parentFolderId,
+  })
+  .refine(body => body.name !== undefined || body.parentFolderId !== undefined, {
+    message: 'Must provide at least one field to update',
+  })
 
 export const deleteFileSchema = z.object({
   permanent: z.boolean().default(false),

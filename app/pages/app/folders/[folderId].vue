@@ -2,25 +2,37 @@
 import type { SerializedFile } from '#shared/types/response/files'
 
 definePageMeta({
+  key: 'folder-view',
   layout: 'dashboard',
-  middleware: 'auth',
+  middleware: ['auth', 'folder-id'],
 })
 
-const { files, isPending, refresh, patchFile } = useFolderContents(null)
+const route = useRoute()
+const folderId = computed(() => route.params.folderId as string)
+
+const {
+  files,
+  isPending,
+  refresh,
+  patchFile,
+} = useFolderContents(folderId)
+
+const { breadcrumbs, isRefreshing } = useBreadcrumbs(folderId)
 
 const handleRenamed = (updated: SerializedFile) => {
-  console.log('renamed emitted. patching file.')
   patchFile(updated.id, updated)
-  console.log(files)
 }
 </script>
 
 <template>
-  <UDashboardPanel id="index">
+  <UDashboardPanel id="folder-content">
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          My files
+          <FileBreadcrumb
+            :breadcrumbs
+            :is-refreshing="isRefreshing"
+          />
         </template>
         <template #leading>
           <UDashboardSidebarCollapse />

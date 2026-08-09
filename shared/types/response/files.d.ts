@@ -40,6 +40,18 @@ export interface FileListResponse {
   files: SerializedFile[]
 }
 
+export interface FileDetailResponse {
+  file: SerializedFile
+}
+
+export interface BreadcrumbsResponse {
+  breadcrumbs: SerializedFile[]
+}
+
+export interface UpdateFileResponse {
+  file: SerializedFile
+}
+
 export interface DownloadUrlResponse {
   downloadUrl: string
   expiresIn: number
