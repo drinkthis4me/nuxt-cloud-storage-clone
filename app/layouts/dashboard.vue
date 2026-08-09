@@ -10,7 +10,7 @@ const links = [
     {
       label: 'My files',
       icon: 'i-lucide-folder',
-      to: '/app/my-files',
+      to: '/app/folders',
     },
     {
       label: 'Favorite',

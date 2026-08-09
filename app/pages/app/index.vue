@@ -1,18 +1,10 @@
 <script setup lang="ts">
-import type { SerializedFile } from '#shared/types/response/files'
-
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
 })
 
-const { files, isPending, refresh, patchFile } = useFolderContents(null)
-
-const handleRenamed = (updated: SerializedFile) => {
-  console.log('renamed emitted. patching file.')
-  patchFile(updated.id, updated)
-  console.log(files)
-}
+// TODO: Recent/Suggest files
 </script>
 
 <template>
@@ -20,7 +12,7 @@ const handleRenamed = (updated: SerializedFile) => {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          My files
+          Welcome
         </template>
         <template #leading>
           <UDashboardSidebarCollapse />
@@ -29,12 +21,7 @@ const handleRenamed = (updated: SerializedFile) => {
     </template>
 
     <template #body>
-      <FileTable
-        :files
-        :loading="isPending"
-        @moved="refresh"
-        @renamed="handleRenamed"
-      />
+      app
     </template>
   </UDashboardPanel>
 </template>

@@ -4,11 +4,11 @@ import type { SerializedFile } from '#shared/types/response/files'
 definePageMeta({
   key: 'folder-view',
   layout: 'dashboard',
-  middleware: ['auth', 'folder-id'],
+  middleware: ['auth'],
 })
 
 const route = useRoute()
-const folderId = computed(() => route.params.folderId as string)
+const folderId = computed(() => (route.params.folderId as string) || null)
 
 const {
   files,
@@ -17,7 +17,13 @@ const {
   patchFile,
 } = useFolderContents(folderId)
 
-const { breadcrumbs, isRefreshing } = useBreadcrumbs(folderId)
+const {
+  breadcrumbs,
+  isRefreshing,
+  error: breadcrumbsError,
+} = useBreadcrumbs(folderId)
+
+const notFound = computed(() => folderId.value !== null && !!breadcrumbsError.value)
 
 const handleRenamed = (updated: SerializedFile) => {
   patchFile(updated.id, updated)
@@ -30,6 +36,7 @@ const handleRenamed = (updated: SerializedFile) => {
       <UDashboardNavbar>
         <template #title>
           <FileBreadcrumb
+            v-if="!notFound"
             :breadcrumbs
             :is-refreshing="isRefreshing"
           />
@@ -41,7 +48,9 @@ const handleRenamed = (updated: SerializedFile) => {
     </template>
 
     <template #body>
+      <HeroNotFound v-if="notFound" />
       <FileTable
+        v-else
         :files
         :loading="isPending"
         @moved="refresh"

@@ -14,7 +14,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     label: 'My Files',
     icon: 'i-lucide-folder',
-    to: '/app',
+    to: '/app/folders',
   },
   ...breadcrumbs.map(b => ({
     label: b.name,

@@ -3,29 +3,44 @@ import type { BreadcrumbsResponse } from '#shared/types/response/files'
 export const useBreadcrumbs = (folderId: MaybeRefOrGetter<string | null>) => {
   const id = computed(() => toValue(folderId))
 
-  const { data, status } = useFetch<BreadcrumbsResponse>(
-    () => `/api/files/${id.value}/breadcrumbs`,
-    {
-      key: computed(() => `breadcrumbs-${id.value}`),
-      watch: [id],
-      lazy: true,
-      immediate: computed(() => id.value !== null).value,
+  const data = shallowRef<BreadcrumbsResponse | null>(null)
+  const lastBreadcrumbs = shallowRef<BreadcrumbsResponse['breadcrumbs']>([])
+  const isRefreshing = shallowRef(false)
+  const error = shallowRef<unknown>(null)
+
+  watch(
+    id,
+    async (currentId) => {
+      if (!currentId) {
+        // root — no breadcrumb chain, and don't show stale crumbs from a previous folder
+        data.value = null
+        lastBreadcrumbs.value = []
+        return
+      }
+
+      isRefreshing.value = true
+      try {
+        data.value = await $fetch<BreadcrumbsResponse>(`/api/files/${currentId}/breadcrumbs`)
+        if (data.value?.breadcrumbs) {
+          lastBreadcrumbs.value = data.value.breadcrumbs
+        }
+      }
+      catch (err) {
+        console.error('Failed to fetch breadcrumbs', err)
+        error.value = err
+      }
+      finally {
+        isRefreshing.value = false
+      }
     },
+    { immediate: true },
   )
 
-  const lastBreadcrumbs = shallowRef<BreadcrumbsResponse['breadcrumbs']>([])
-
-  watch(data, (val) => {
-    if (val?.breadcrumbs) {
-      lastBreadcrumbs.value = val.breadcrumbs
-    }
-  }, { immediate: true })
-
   const breadcrumbs = computed(() => data.value?.breadcrumbs ?? lastBreadcrumbs.value)
-  const isRefreshing = computed(() => status.value === 'pending')
 
   return {
     breadcrumbs,
     isRefreshing,
+    error,
   }
 }
