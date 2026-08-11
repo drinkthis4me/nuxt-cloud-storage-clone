@@ -1,23 +1,39 @@
+import DialogMoveFile from '~/components/dialog/moveFile/DialogMoveFile.vue'
 import { fileIdSchema } from '#shared/schemas/file'
 import { getRequestErrorMessage } from '~/utils/getRequestErrorMessage'
 
 import type { UpdateFileResponse } from '#shared/types/response/files'
 
 export const useMoveFile = () => {
+  const overlay = useOverlay()
   const toast = useToast()
 
-  const moveFiles = async (fileIds: string[], targetFolderId: string) => {
+  interface OpenDialogOption {
+    name: string
+    parentFolderId: string | null
+    movingIds: string[]
+  }
+
+  const openDialog = async (props: OpenDialogOption): Promise<{ newParentFolderId: string | null } | null> => {
+    const modal = overlay.create(DialogMoveFile, { destroyOnClose: true })
+
+    return modal.open(props)
+  }
+
+  interface MoveFilesResult {
+    succeededIds: string[]
+    failedIds: string[]
+  }
+
+  const moveFiles = async (fileIds: string[], targetFolderId: string | null): Promise<MoveFilesResult> => {
     const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
     const validIds: string[] = []
     for (const result of parseResults) {
       if (!result.success) {
-        toast.add({
-          color: 'error',
-          title: 'Error',
-          description: 'Incorrect file ID',
-        })
-        return
+        console.error('Parse file IDs failed')
+        toast.add({ color: 'error', title: 'Invalid file selection' })
+        return { succeededIds: [], failedIds: fileIds }
       }
       validIds.push(result.data.id)
     }
@@ -31,39 +47,69 @@ export const useMoveFile = () => {
       ),
     )
 
-    const failures = results
-      .map((result, i) => ({ result, id: validIds[i] }))
-      .filter(r => r.result.status === 'rejected')
-    const succeeded = results.filter(r => r.status === 'fulfilled').length
+    const succeededIds: string[] = []
+    const failedIds: string[] = []
+    const failureMessages = new Map<string, number>()
 
-    if (failures.length === 0) {
+    results.forEach((result, i) => {
+      const id = validIds[i]!
+      if (result.status === 'fulfilled') {
+        succeededIds.push(id)
+      }
+      else {
+        failedIds.push(id)
+        const msg = getRequestErrorMessage(result.reason)
+        failureMessages.set(msg, (failureMessages.get(msg) ?? 0) + 1)
+      }
+    })
+
+    if (failedIds.length === 0 && succeededIds.length > 0) {
       toast.add({
         color: 'success',
-        title: `${succeeded} ${succeeded > 1 ? 'Files' : 'File'} moved`,
+        title: `${succeededIds.length} ${succeededIds.length > 1 ? 'files' : 'file'} moved`,
+      })
+    }
+    else if (succeededIds.length > 0 && failedIds.length > 0) {
+      toast.add({
+        color: 'success',
+        title: `Moved ${succeededIds.length} of ${validIds.length} files`,
       })
     }
 
-    if (succeeded > 0 && failures.length > 0) {
-      toast.add({
-        color: 'success',
-        title: `Moved ${succeeded} of ${validIds.length} files`,
-      })
-    }
-
-    const grouped = new Map<string, number>()
-    for (const failure of failures) {
-      const msg = getRequestErrorMessage((failure.result as PromiseRejectedResult).reason)
-      grouped.set(msg, (grouped.get(msg) ?? 0) + 1)
-    }
-
-    for (const [message, count] of grouped) {
+    for (const [message, count] of failureMessages) {
       toast.add({
         color: 'error',
         title: `Failed to move ${count} ${count === 1 ? 'file' : 'files'}`,
         description: message,
       })
     }
+
+    return { succeededIds, failedIds }
   }
 
-  return { moveFiles }
+  const promptAndMove = async (
+    filesToMove: { id: string, name: string }[],
+    parentFolderId: string | null,
+  ): Promise<MoveFilesResult | null> => {
+    if (filesToMove.length === 0) return null
+
+    const fileName = filesToMove.length === 1 ? filesToMove[0]!.name : `${filesToMove.length} files`
+    const movingIds = filesToMove.map(file => file.id)
+    const res = await openDialog({
+      name: fileName,
+      parentFolderId,
+      movingIds,
+    })
+
+    // Dialog cancelled
+    if (res === null) return null
+
+    // return null
+    return moveFiles(movingIds, res.newParentFolderId)
+  }
+
+  return {
+    moveFiles,
+    promptAndMove,
+  }
 }

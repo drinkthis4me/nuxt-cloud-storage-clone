@@ -7,60 +7,124 @@ import type {
 
 export const useDeleteFile = () => {
   const toast = useToast()
-  const fileTableStore = useFileTableStore()
-  const fileTrashTableStore = useFileTrashTableStore()
 
-  const softDelete = async (id: string) => {
-    try {
-      const valid = fileIdSchema.parse({ id })
-      const { file } = await $fetch<SoftDeleteFileResponse>(`/api/files/${valid.id}`, {
-        method: 'DELETE',
-      })
+  const softDelete = async (fileIds: string[]) => {
+    const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
+    const validIds: string[] = []
+    for (const result of parseResults) {
+      if (!result.success) {
+        console.error('Parse file IDs failed')
+        toast.add({ color: 'error', title: 'Invalid file selection' })
+        return { succeededIds: [], failedIds: fileIds }
+      }
+      validIds.push(result.data.id)
+    }
+
+    const results = await Promise.allSettled(
+      validIds.map(id =>
+        $fetch<SoftDeleteFileResponse>(`/api/files/${id}`, {
+          method: 'DELETE',
+        }),
+      ),
+    )
+
+    const succeededIds: string[] = []
+    const failedIds: string[] = []
+    const failureMessages = new Map<string, number>()
+
+    results.forEach((result, i) => {
+      const id = validIds[i]!
+      if (result.status === 'fulfilled') {
+        succeededIds.push(id)
+      }
+      else {
+        failedIds.push(id)
+      }
+    })
+
+    if (failedIds.length === 0 && succeededIds.length > 0) {
       toast.add({
         color: 'success',
-        title: 'File moved to trash bin',
-        description: file.name,
+        title: `${succeededIds.length} ${succeededIds.length > 1 ? 'files' : 'file'} moved to trash bin`,
       })
-
-      fileTableStore.fetchFiles()
     }
-    catch (err) {
-      console.log(err)
+    else if (succeededIds.length > 0 && failedIds.length > 0) {
+      toast.add({
+        color: 'success',
+        title: `Moved ${succeededIds.length} of ${validIds.length} files to trash bin`,
+      })
+    }
+
+    for (const [message, count] of failureMessages) {
       toast.add({
         color: 'error',
-        title: 'Error',
-        description: 'Failed to move file to trash bin. Please try again.',
+        title: `Failed to move ${count} ${count === 1 ? 'file' : 'files'} to trash bin`,
+        description: message,
       })
     }
+
+    return { succeededIds, failedIds }
   }
 
-  const hardDelete = async (id: string, name: string) => {
-    try {
-      const valid = fileIdSchema.parse({ id })
-      const { deleted } = await $fetch<HardDeleteFileResponse>(`/api/files/${valid.id}`, {
-        method: 'DELETE',
-        query: { permanent: true },
-      })
+  const hardDelete = async (fileIds: string[]) => {
+    const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
-      if (deleted) {
-        toast.add({
-          color: 'success',
-          title: 'Permanent deleted',
-          description: name,
-        })
-
-        fileTrashTableStore.fetchFiles()
+    const validIds: string[] = []
+    for (const result of parseResults) {
+      if (!result.success) {
+        console.error('Parse file IDs failed')
+        toast.add({ color: 'error', title: 'Invalid file selection' })
+        return { succeededIds: [], failedIds: fileIds }
       }
+      validIds.push(result.data.id)
     }
-    catch (err) {
-      console.log(err)
+
+    const results = await Promise.allSettled(
+      validIds.map(id =>
+        $fetch<HardDeleteFileResponse>(`/api/files/${id}`, {
+          method: 'DELETE',
+          query: { permanent: true },
+        }),
+      ),
+    )
+
+    const succeededIds: string[] = []
+    const failedIds: string[] = []
+    const failureMessages = new Map<string, number>()
+
+    results.forEach((result, i) => {
+      const id = validIds[i]!
+      if (result.status === 'fulfilled') {
+        succeededIds.push(id)
+      }
+      else {
+        failedIds.push(id)
+      }
+    })
+
+    if (failedIds.length === 0 && succeededIds.length > 0) {
+      toast.add({
+        color: 'success',
+        title: `${succeededIds.length} ${succeededIds.length > 1 ? 'files' : 'file'} permanent deleted`,
+      })
+    }
+    else if (succeededIds.length > 0 && failedIds.length > 0) {
+      toast.add({
+        color: 'success',
+        title: `Permanently delete ${succeededIds.length} of ${validIds.length} files`,
+      })
+    }
+
+    for (const [message, count] of failureMessages) {
       toast.add({
         color: 'error',
-        title: 'Error',
-        description: 'Delete failed. Please try again.',
+        title: `Failed to delete ${count} ${count === 1 ? 'file' : 'files'}`,
+        description: message,
       })
     }
+
+    return { succeededIds, failedIds }
   }
 
   return {

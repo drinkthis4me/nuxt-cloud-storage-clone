@@ -10,15 +10,25 @@ const {
   isRefreshing?: boolean
 }>()
 
+const emit = defineEmits<{
+  'change-folder': [value: string | null]
+}>()
+
 const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
   {
     label: 'My Files',
     icon: 'i-lucide-folder',
-    to: '/app/folders',
+    class: 'cursor-pointer',
+    onClick() {
+      emit('change-folder', null)
+    },
   },
   ...breadcrumbs.map(b => ({
     label: b.name,
-    to: `/app/folders/${b.id}`,
+    class: 'cursor-pointer',
+    onClick() {
+      emit('change-folder', b.id)
+    },
   })),
 ])
 </script>
@@ -32,7 +42,7 @@ const breadcrumbItems = computed<BreadcrumbItem[]>(() => [
     <Icon
       v-if="isRefreshing"
       name="i-lucide-loader-circle"
-      class="ml-4 animate-spin text-dimmed"
+      class="ml-4 animate-spin text-muted"
     />
   </div>
 </template>

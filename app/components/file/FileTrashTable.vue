@@ -1,7 +1,7 @@
 <script lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { SerializedFile } from '~~/shared/types/response/files'
-import type { ComponentPublicInstance } from 'vue'
+import type { UTableInstance } from '~/types/UTableInstance'
 </script>
 
 <script setup lang="ts">
@@ -11,8 +11,19 @@ import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
 import { h, useTemplateRef } from 'vue'
 
-const fileTrashTableStore = useFileTrashTableStore()
-useAsyncData('trash-table', () => fileTrashTableStore.fetchFiles())
+const {
+  files = [],
+  loading,
+} = defineProps<{
+  files?: SerializedFile[]
+  loading: boolean
+}>()
+
+const emit = defineEmits<{
+  'refresh': []
+  'file-updated': [file: SerializedFile]
+  'file-deleted': [fileIds: SerializedFile['id'][]]
+}>()
 
 const columns: TableColumn<SerializedFile>[] = [
   {
@@ -66,12 +77,6 @@ const columns: TableColumn<SerializedFile>[] = [
   {
     accessorKey: 'updatedAt',
     header: 'Last Modified',
-    // meta: {
-    //   class: {
-    //     th: 'text-right',
-    //     td: 'text-right font-medium',
-    //   },
-    // },
     cell: ({ row }) => {
       const formatted = isoToLocalDateTime(row.original.updatedAt)
       return h('span', {}, formatted)
@@ -87,19 +92,33 @@ const columns: TableColumn<SerializedFile>[] = [
   },
 ]
 
-const table = useTemplateRef<ComponentPublicInstance>('trash-table')
+const table = useTemplateRef<UTableInstance<SerializedFile>>('trash-table')
 
 const {
   rowSelection,
   getRowId,
   onSelect,
   deselectAll,
-} = useTableSelection<SerializedFile>(table)
+} = useTableSelection<SerializedFile>({ table })
 
 const {
   contextMenuItems,
-  onContextMenu,
-} = useTableContextMenu({ table: 'trash-bin' })
+  onContextMenu: onContextMenuBase,
+} = useTableContextMenu({
+  table: 'trash-bin',
+  rowSelection,
+  onRestored: ids => emit('file-deleted', ids),
+  onHardDeleted: ids => emit('file-deleted', ids),
+  onSelectionReplaced: (rowId) => {
+    rowSelection.value = { [rowId]: true }
+  },
+})
+
+const onContextMenu = (e: Event, row: TableRow<SerializedFile>) => {
+  const tableApi = table.value?.tableApi
+  const allRows = tableApi?.getRowModel().rows ?? [row]
+  onContextMenuBase(e, row, allRows)
+}
 </script>
 
 <template>
@@ -111,8 +130,8 @@ const {
       <UTable
         ref="trash-table"
         v-model:row-selection="rowSelection"
-        :data="fileTrashTableStore.files"
-        :loading="fileTrashTableStore.isLoading"
+        :data="files"
+        :loading="loading"
         :columns="columns"
         :get-row-id="getRowId"
         :ui="{

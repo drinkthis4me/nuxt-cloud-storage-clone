@@ -1,11 +1,10 @@
-import { fileScope } from '#shared/schemas/file'
+import { fileScope, fileStatus } from '#shared/schemas/file'
 import type { SerializedFile, FileListResponse } from '#shared/types/response/files'
 
-export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => {
-  const parentFolderId = computed(() => toValue(folderId))
+export const useTrashBinContents = () => {
   const query = computed(() => ({
-    ...(parentFolderId.value ? { parentFolderId: parentFolderId.value } : {}),
     scope: fileScope.MINE,
+    status: fileStatus.DELETED,
   }))
 
   // FIXME: extract to getFetchKey util
@@ -15,9 +14,8 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
     error,
     refresh,
   } = useFetch<FileListResponse>('/api/files', {
-    key: computed(() => `folder-contents-${parentFolderId.value ?? 'root'}`),
+    key: 'trash-bin',
     query,
-    watch: [parentFolderId],
   })
 
   const files = computed(() => data.value?.files ?? [])

@@ -1,8 +1,24 @@
 <script setup lang="ts">
+import type { SerializedFile } from '#shared/types/response/files'
+
 definePageMeta({
   layout: 'dashboard',
   middleware: 'auth',
 })
+
+const {
+  files,
+  isPending,
+  refresh,
+  patchFile,
+} = useTrashBinContents()
+
+const handleFileUpdated = (updated: SerializedFile) => {
+  patchFile([updated.id], updated)
+}
+const handleFileDeleted = (fileIds: string[]) => {
+  patchFile(fileIds, null)
+}
 </script>
 
 <template>
@@ -21,7 +37,20 @@ definePageMeta({
     </template>
 
     <template #body>
-      <FileTrashTable />
+      <HeroNotFound
+        v-if="files.length === 0"
+        icon="i-lucide-trash-2"
+        title="Trash bin is empty"
+        description="No items in trash bin"
+      />
+      <FileTrashTable
+        v-else
+        :files
+        :loading="isPending"
+        @refresh="refresh"
+        @file-updated="handleFileUpdated"
+        @file-deleted="handleFileDeleted"
+      />
     </template>
   </UDashboardPanel>
 </template>

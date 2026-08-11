@@ -7,7 +7,6 @@ import type { CreateFolderResponse } from '~~/shared/types/response/files'
 export const useCreateFolder = () => {
   const overlay = useOverlay()
   const toast = useToast()
-  const fileTableStore = useFileTableStore()
 
   const openDialog = async (): Promise<string | null> => {
     const modal = overlay.create(DialogCreateNewFolder, {
@@ -27,7 +26,6 @@ export const useCreateFolder = () => {
       })
 
       console.log(res)
-      fileTableStore.fetchFiles()
     }
     catch (err) {
       console.log(err)
@@ -39,14 +37,14 @@ export const useCreateFolder = () => {
     }
   }
 
-  const promptAndCreateFolder = async () => {
+  const promptAndCreateFolder = async (parentFolderId: string | null = null) => {
     const res = await openDialog()
 
     if (res) {
-      console.log('New folder name', res)
       createFolder({
         name: res,
         isFolder: true,
+        ...(parentFolderId !== null ? { parentFolderId } : {}),
       })
     }
   }

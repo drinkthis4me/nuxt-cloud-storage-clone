@@ -1,43 +1,91 @@
+import type { Ref } from 'vue'
 import type { ContextMenuItem, TableRow } from '@nuxt/ui'
 import type { SerializedFile } from '~~/shared/types/response/files'
 
 interface useTableContextMenuOption {
   table?: 'default' | 'trash-bin'
+  rowSelection: Ref<Record<string, boolean>>
   onRenamed?: (file: SerializedFile) => void
+  onSoftDeleted?: (ids: SerializedFile['id'][]) => void
+  onHardDeleted?: (ids: SerializedFile['id'][]) => void
+  onRestored?: (ids: SerializedFile['id'][]) => void
+  onSelectionReplaced?: (rowId: string) => void
+  onMoved?: () => void
 }
 
-export const useTableContextMenu = (options: useTableContextMenuOption = {}) => {
+export const useTableContextMenu = (options: useTableContextMenuOption) => {
   const {
     table = 'default',
+    rowSelection,
     onRenamed,
+    onSoftDeleted,
+    onHardDeleted,
+    onRestored,
+    onSelectionReplaced,
+    onMoved,
   } = options
 
   const contextMenuItems = ref<ContextMenuItem[]>([])
 
   const { download } = useDownloadFile()
   const { promptAndRename } = useRenameFile()
+  const { promptAndMove } = useMoveFile()
   const { softDelete, hardDelete } = useDeleteFile()
   const { restore } = useRestoreFile()
 
-  const getRowItems = (row: TableRow<SerializedFile>): ContextMenuItem[] => {
+  const resolveTargetRows = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]) => {
+    const isRowInSelection = !!rowSelection.value[row.id]
+
+    if (isRowInSelection) {
+      const selectedIds = new Set(Object.keys(rowSelection.value).filter(id => rowSelection.value[id]))
+      return allRows
+        .filter(r => selectedIds.has(r.id))
+        .map(r => r.original)
+    }
+
+    onSelectionReplaced?.(row.id)
+    return [row.original]
+  }
+
+  const getRowItems = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] => {
+    const targets = resolveTargetRows(row, allRows)
+    const isMulti = targets.length > 1
+    const anyFolder = targets.some(t => t.isFolder)
+
     const downloadButton = {
-      label: 'Download',
+      label: isMulti ? `Download ${targets.length} files` : 'Download',
       icon: 'i-lucide-download',
       async onSelect() {
-        download(row.id)
+        await Promise.all(targets.map(t => download(t.id)))
+      },
+    }
+
+    const renameButton = {
+      label: 'Rename',
+      icon: 'i-lucide-pen-line',
+      async onSelect() {
+        const updated = await promptAndRename(targets[0]!.id, targets[0]!.name)
+        if (updated) {
+          onRenamed?.(updated)
+        }
       },
     }
 
     const items = [
       // Only supports download single file, not folders (for now)
-      ...(row.original.isFolder ? [] : [downloadButton]),
+      ...(anyFolder ? [] : [downloadButton]),
+      // Only rename a single target
+      ...(isMulti ? [] : [renameButton]),
       {
-        label: 'Rename',
-        icon: 'i-lucide-pen-line',
+        label: isMulti ? `Move ${targets.length} items to` : 'Move to',
+        icon: 'i-lucide-folder-input',
         async onSelect() {
-          const updated = await promptAndRename(row.original.id, row.original.name)
-          if (updated) {
-            onRenamed?.(updated)
+          const filesToMove = targets.map(t => ({ id: t.id, name: t.name }))
+          const currentParentFolderId = targets[0]?.parentFolderId ?? null
+          const result = await promptAndMove(filesToMove, currentParentFolderId)
+
+          if (result && result.succeededIds.length > 0) {
+            onMoved?.()
           }
         },
       },
@@ -50,18 +98,20 @@ export const useTableContextMenu = (options: useTableContextMenuOption = {}) => 
         onSelect() {
         },
       },
-      {
-        label: 'Info',
-        icon: 'i-lucide-info',
-      },
+      ...(isMulti ? [] : [{ label: 'Info', icon: 'i-lucide-info' }]),
       {
         type: 'separator' as const,
       },
       {
-        label: 'Move to trash bin',
+        label: isMulti ? `Move ${targets.length} items to trash` : 'Move to trash bin',
         icon: 'i-lucide-trash',
-        onSelect() {
-          softDelete(row.original.id)
+        async onSelect() {
+          const filesToDelete = targets.map(f => f.id)
+          const results = await softDelete(filesToDelete)
+
+          if (results && results.succeededIds.length > 0) {
+            onSoftDeleted?.(results.succeededIds)
+          }
         },
       },
     ]
@@ -69,30 +119,45 @@ export const useTableContextMenu = (options: useTableContextMenuOption = {}) => 
     return items
   }
 
-  const getTrashRowItems = (row: TableRow<SerializedFile>): ContextMenuItem[] => {
-    return [
+  const getTrashRowItems = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] => {
+    const targets = resolveTargetRows(row, allRows)
+    const isMulti = targets.length > 1
+
+    const items = [
       {
-        label: 'Restore',
+        label: isMulti ? `Restore ${targets.length} items` : 'Restore',
         icon: 'i-lucide-file-symlink',
         async onSelect() {
-          restore(row.original.id)
+          const filesToRestore = targets.map(t => t.id)
+          const result = await restore(filesToRestore)
+
+          if (result && result.succeededIds.length > 0) {
+            onRestored?.(result.succeededIds)
+          }
         },
       },
       {
-        label: 'Permanent delete',
+        label: isMulti ? `Permanently delete ${targets.length} items` : 'Permanent delete',
         color: 'error' as const,
         icon: 'i-lucide-trash-2',
         async onSelect() {
-          hardDelete(row.original.id, row.original.name)
+          const filesToDelete = targets.map(f => f.id)
+          const results = await hardDelete(filesToDelete)
+
+          if (results && results.succeededIds.length > 0) {
+            onHardDeleted?.(results.succeededIds)
+          }
         },
       },
     ]
+
+    return items
   }
 
-  const onContextMenu = (_e: Event, row: TableRow<SerializedFile>): void => {
+  const onContextMenu = (_e: Event, row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): void => {
     contextMenuItems.value = table === 'default'
-      ? getRowItems(row)
-      : getTrashRowItems(row)
+      ? getRowItems(row, allRows)
+      : getTrashRowItems(row, allRows)
   }
 
   return {

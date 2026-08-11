@@ -25,8 +25,11 @@ const {
 
 const notFound = computed(() => folderId.value !== null && !!breadcrumbsError.value)
 
-const handleRenamed = (updated: SerializedFile) => {
-  patchFile(updated.id, updated)
+const handleFileUpdated = (updated: SerializedFile) => {
+  patchFile([updated.id], updated)
+}
+const handleFileDeleted = (fileIds: string[]) => {
+  patchFile(fileIds, null)
 }
 </script>
 
@@ -53,8 +56,9 @@ const handleRenamed = (updated: SerializedFile) => {
         v-else
         :files
         :loading="isPending"
-        @moved="refresh"
-        @renamed="handleRenamed"
+        @refresh="refresh"
+        @file-updated="handleFileUpdated"
+        @file-deleted="handleFileDeleted"
       />
     </template>
   </UDashboardPanel>

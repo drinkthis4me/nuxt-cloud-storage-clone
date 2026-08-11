@@ -3,14 +3,23 @@ import { ref } from 'vue'
 import type { TableRow } from '@nuxt/ui'
 import type { UTableInstance } from '~/types/UTableInstance'
 
+interface UseTableSelectionOption<T> {
+  doubleClickOnly?: boolean
+  table: Ref<UTableInstance<T> | null>
+  onRowDoubleClick?: (row: TableRow<T>) => void
+}
+
 export const useTableSelection = <T>(
-  table: Ref<UTableInstance<T> | null>,
-  onRowDoubleClick: (row: TableRow<T>) => void = () => {},
+  option: UseTableSelectionOption<T>,
 ) => {
+  const {
+    doubleClickOnly = false,
+    table,
+    onRowDoubleClick,
+  } = option
+
   const rowSelection = ref<Record<string, boolean>>({})
-
   const lastSelectedRowId = ref<string | null>(null)
-
   let clickTimeout: NodeJS.Timeout | null = null
 
   const onSelect = (e: Event, row: TableRow<T>) => {
@@ -21,19 +30,26 @@ export const useTableSelection = <T>(
       clearTimeout(clickTimeout)
       clickTimeout = null
 
-      onRowDoubleClick(row)
+      onRowDoubleClick?.(row)
       return
     }
 
     clickTimeout = setTimeout(() => {
-      if (mouseEvent.shiftKey && lastSelectedRowId.value) {
-        selectRange(lastSelectedRowId.value, row.id)
-        return
+      if (!doubleClickOnly) {
+        if (mouseEvent.shiftKey && lastSelectedRowId.value) {
+          selectRange(lastSelectedRowId.value, row.id)
+          return
+        }
+
+        row.toggleSelected(!row.getIsSelected())
+
+        lastSelectedRowId.value = row.id
       }
 
-      row.toggleSelected(!row.getIsSelected())
-
-      lastSelectedRowId.value = row.id
+      if (clickTimeout) {
+        clearTimeout(clickTimeout)
+        clickTimeout = null
+      }
     }, 250)
   }
 

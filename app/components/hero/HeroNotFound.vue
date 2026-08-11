@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{
+  icon?: string
   title?: string
   message?: string
 }>()
@@ -8,7 +9,7 @@ defineProps<{
 <template>
   <div class="flex-1 flex flex-col items-center justify-center gap-4 py-24 text-center">
     <UIcon
-      name="i-lucide-folder-x"
+      :name="icon ?? 'i-lucide-folder-x'"
       class="size-16 text-muted"
     />
     <div>

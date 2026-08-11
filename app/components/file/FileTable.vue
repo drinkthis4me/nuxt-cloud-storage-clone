@@ -1,12 +1,12 @@
 <script lang="ts">
 import type { TableColumn, TableRow } from '@nuxt/ui'
 import type { SerializedFile } from '#shared/types/response/files'
-import type { ComponentPublicInstance } from 'vue'
+import type { UTableInstance } from '~/types/UTableInstance'
 </script>
 
 <script setup lang="ts">
 import { useSortable } from '@vueuse/integrations/useSortable'
-import { Icon, UCheckbox, UTable } from '#components'
+import { Icon, UCheckbox, UTable, UButton } from '#components'
 import { getFileIcon } from '~~/app/utils/getFileIcon'
 import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
@@ -21,8 +21,9 @@ const {
 }>()
 
 const emit = defineEmits<{
-  moved: []
-  renamed: [file: SerializedFile]
+  'refresh': []
+  'file-updated': [file: SerializedFile]
+  'file-deleted': [fileIds: SerializedFile['id'][]]
 }>()
 
 const columns: TableColumn<SerializedFile>[] = [
@@ -88,9 +89,32 @@ const columns: TableColumn<SerializedFile>[] = [
       return h('span', {}, res)
     },
   },
+  {
+    id: 'folder-navigate',
+    header: 'Navigate',
+    meta: {
+      class: {
+        th: 'text-center',
+        td: 'flex justify-center items-center',
+      },
+    },
+    cell: ({ row }) => {
+      return row.original.isFolder
+        ? h(UButton, {
+            icon: 'i-lucide-arrow-right',
+            color: 'neutral',
+            variant: 'ghost',
+            class: 'cursor-pointer',
+            onClick: () => {
+              onRowDoubleClick(row)
+            },
+          })
+        : h('span')
+    },
+  },
 ]
 
-const table = useTemplateRef<ComponentPublicInstance>('table')
+const table = useTemplateRef<UTableInstance<SerializedFile>>('table')
 
 const onRowDoubleClick = (row: TableRow<SerializedFile>) => {
   if (row.original.isFolder) {
@@ -103,19 +127,34 @@ const {
   getRowId,
   onSelect,
   deselectAll,
-} = useTableSelection<SerializedFile>(table, onRowDoubleClick)
+} = useTableSelection<SerializedFile>({
+  table,
+  onRowDoubleClick,
+})
 
 const {
   contextMenuItems,
-  onContextMenu,
+  onContextMenu: onContextMenuBase,
 } = useTableContextMenu({
-  onRenamed: file => emit('renamed', file),
+  rowSelection,
+  onRenamed: file => emit('file-updated', file),
+  onSoftDeleted: ids => emit('file-deleted', ids),
+  onSelectionReplaced: (rowId) => {
+    rowSelection.value = { [rowId]: true }
+  },
+  onMoved: () => emit('refresh'),
 })
+
+const onContextMenu = (e: Event, row: TableRow<SerializedFile>) => {
+  const tableApi = table.value?.tableApi
+  const allRows = tableApi?.getRowModel().rows ?? [row]
+  onContextMenuBase(e, row, allRows)
+}
 
 const { moveFiles } = useMoveFile()
 const onMoveFiles = async (fileIds: string[], targetFolderId: string) => {
   await moveFiles(fileIds, targetFolderId)
-  emit('moved')
+  emit('refresh')
 }
 const { sortableOptions } = useTableDragToFolder(table, rowSelection, onMoveFiles)
 useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
