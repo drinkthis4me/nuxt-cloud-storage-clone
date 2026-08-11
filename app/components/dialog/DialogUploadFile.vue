@@ -21,7 +21,7 @@ const form = reactive<Partial<Schema>>({
   file: undefined,
 })
 
-const onSubmit = (e: FormSubmitEvent<Schema>) => {
+function onSubmit(e: FormSubmitEvent<Schema>) {
   console.log('onSubmit')
   emit('close', e.data.file)
 }

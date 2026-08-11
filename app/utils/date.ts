@@ -8,7 +8,7 @@ const formatter = new DateFormatter('en-US', {
   timeZone: localTimeZone,
 })
 
-export const isoToLocalDateTime = (isoString: string | null): string => {
+export function isoToLocalDateTime(isoString: string | null): string {
   if (isoString === null) return 'N/A'
 
   try {

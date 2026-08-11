@@ -1,4 +1,4 @@
-export const sha256 = async (file: File): Promise<string> => {
+export async function sha256(file: File): Promise<string> {
   let str = ''
 
   try {

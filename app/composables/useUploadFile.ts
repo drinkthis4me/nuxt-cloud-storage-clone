@@ -7,12 +7,12 @@ import type {
   CompleteUploadResponse,
 } from '~~/shared/types/response/files'
 
-export const useUploadFile = () => {
+export function useUploadFile() {
   const overlay = useOverlay()
   const toast = useToast()
   const fileTableStore = useFileTableStore()
 
-  const openDialog = async (): Promise<File | null> => {
+  async function openDialog(): Promise<File | null> {
     const modal = overlay.create(DialogUploadFile, {
       destroyOnClose: true,
     })
@@ -20,7 +20,7 @@ export const useUploadFile = () => {
     return modal.open()
   }
 
-  const uploadFile = async (file: File, parentFolderId: string | null = null) => {
+  async function uploadFile(file: File, parentFolderId: string | null = null) {
     try {
       const fingerprint = await sha256(file)
 
@@ -36,9 +36,7 @@ export const useUploadFile = () => {
       const validBody = fileSchema.parse(body)
 
       const {
-        duplicate,
-        uploadUrl,
-        file: serverFileEntry,
+        duplicate, uploadUrl, file: serverFileEntry,
       } = await $fetch<CreateFileUploadResponse>('/api/files', {
         method: 'POST',
         body: validBody,
@@ -83,7 +81,7 @@ export const useUploadFile = () => {
     }
   }
 
-  const promptAndUploadFile = async () => {
+  async function promptAndUploadFile() {
     const file = await openDialog()
 
     if (!file) return

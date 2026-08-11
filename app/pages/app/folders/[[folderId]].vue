@@ -25,10 +25,10 @@ const {
 
 const notFound = computed(() => folderId.value !== null && !!breadcrumbsError.value)
 
-const handleFileUpdated = (updated: SerializedFile) => {
+function handleFileUpdated(updated: SerializedFile) {
   patchFile([updated.id], updated)
 }
-const handleFileDeleted = (fileIds: string[]) => {
+function handleFileDeleted(fileIds: string[]) {
   patchFile(fileIds, null)
 }
 </script>

@@ -13,7 +13,7 @@ interface useTableContextMenuOption {
   onMoved?: () => void
 }
 
-export const useTableContextMenu = (options: useTableContextMenuOption) => {
+export function useTableContextMenu(options: useTableContextMenuOption) {
   const {
     table = 'default',
     rowSelection,
@@ -33,7 +33,7 @@ export const useTableContextMenu = (options: useTableContextMenuOption) => {
   const { softDelete, hardDelete } = useDeleteFile()
   const { restore } = useRestoreFile()
 
-  const resolveTargetRows = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]) => {
+  function resolveTargetRows(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]) {
     const isRowInSelection = !!rowSelection.value[row.id]
 
     if (isRowInSelection) {
@@ -47,7 +47,7 @@ export const useTableContextMenu = (options: useTableContextMenuOption) => {
     return [row.original]
   }
 
-  const getRowItems = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] => {
+  function getRowItems(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] {
     const targets = resolveTargetRows(row, allRows)
     const isMulti = targets.length > 1
     const anyFolder = targets.some(t => t.isFolder)
@@ -119,7 +119,7 @@ export const useTableContextMenu = (options: useTableContextMenuOption) => {
     return items
   }
 
-  const getTrashRowItems = (row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] => {
+  function getTrashRowItems(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] {
     const targets = resolveTargetRows(row, allRows)
     const isMulti = targets.length > 1
 
@@ -154,7 +154,7 @@ export const useTableContextMenu = (options: useTableContextMenuOption) => {
     return items
   }
 
-  const onContextMenu = (_e: Event, row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): void => {
+  function onContextMenu(_e: Event, row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): void {
     contextMenuItems.value = table === 'default'
       ? getRowItems(row, allRows)
       : getTrashRowItems(row, allRows)

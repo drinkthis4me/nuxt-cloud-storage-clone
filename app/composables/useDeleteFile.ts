@@ -5,10 +5,10 @@ import type {
   HardDeleteFileResponse,
 } from '#shared/types/response/files'
 
-export const useDeleteFile = () => {
+export function useDeleteFile() {
   const toast = useToast()
 
-  const softDelete = async (fileIds: string[]) => {
+  async function softDelete(fileIds: string[]) {
     const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
     const validIds: string[] = []
@@ -22,10 +22,9 @@ export const useDeleteFile = () => {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id =>
-        $fetch<SoftDeleteFileResponse>(`/api/files/${id}`, {
-          method: 'DELETE',
-        }),
+      validIds.map(id => $fetch<SoftDeleteFileResponse>(`/api/files/${id}`, {
+        method: 'DELETE',
+      }),
       ),
     )
 
@@ -67,7 +66,7 @@ export const useDeleteFile = () => {
     return { succeededIds, failedIds }
   }
 
-  const hardDelete = async (fileIds: string[]) => {
+  async function hardDelete(fileIds: string[]) {
     const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
     const validIds: string[] = []
@@ -81,11 +80,10 @@ export const useDeleteFile = () => {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id =>
-        $fetch<HardDeleteFileResponse>(`/api/files/${id}`, {
-          method: 'DELETE',
-          query: { permanent: true },
-        }),
+      validIds.map(id => $fetch<HardDeleteFileResponse>(`/api/files/${id}`, {
+        method: 'DELETE',
+        query: { permanent: true },
+      }),
       ),
     )
 

@@ -11,7 +11,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   const toast = useToast()
 
-  const logout = async () => {
+  async function logout() {
     isLoading.value = true
     try {
       if (!ready) fetchSession()
@@ -35,7 +35,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  const reset = () => {
+  function reset() {
   }
 
   return {

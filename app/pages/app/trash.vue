@@ -13,10 +13,10 @@ const {
   patchFile,
 } = useTrashBinContents()
 
-const handleFileUpdated = (updated: SerializedFile) => {
+function handleFileUpdated(updated: SerializedFile) {
   patchFile([updated.id], updated)
 }
-const handleFileDeleted = (fileIds: string[]) => {
+function handleFileDeleted(fileIds: string[]) {
   patchFile(fileIds, null)
 }
 </script>

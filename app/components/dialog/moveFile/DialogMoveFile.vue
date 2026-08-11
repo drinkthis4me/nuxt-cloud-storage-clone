@@ -20,10 +20,10 @@ const isInvalidTarget = computed(() =>
 
 // Modal
 const title = computed(() => `Moving "${props.name}"`)
-const onClose = () => {
+function onClose() {
   emit('close', null)
 }
-const onMoveClick = () => {
+function onMoveClick() {
   const payload = {
     newParentFolderId: currentParentFolderId.value ?? null,
   }
@@ -37,7 +37,7 @@ const {
   error: breadcrumbsError,
 } = useBreadcrumbs(currentParentFolderId)
 const notFound = computed(() => currentParentFolderId.value !== null && !!breadcrumbsError.value)
-const handleChangeFolder = async (newId: string | null) => {
+async function handleChangeFolder(newId: string | null) {
   currentParentFolderId.value = newId
 }
 
@@ -50,7 +50,7 @@ const {
 
 // Create new folder
 const { promptAndCreateFolder } = useCreateFolder()
-const onCreateFolderClick = async () => {
+async function onCreateFolderClick() {
   await promptAndCreateFolder(currentParentFolderId.value)
   refresh()
 }

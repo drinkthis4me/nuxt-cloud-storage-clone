@@ -1,6 +1,6 @@
 import type { BreadcrumbsResponse } from '#shared/types/response/files'
 
-export const useBreadcrumbs = (folderId: MaybeRefOrGetter<string | null>) => {
+export function useBreadcrumbs(folderId: MaybeRefOrGetter<string | null>) {
   const id = computed(() => toValue(folderId))
 
   const data = shallowRef<BreadcrumbsResponse | null>(null)

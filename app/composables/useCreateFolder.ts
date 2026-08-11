@@ -4,11 +4,11 @@ import { folderSchema } from '~~/shared/schemas/file'
 import type { FolderSchema } from '~~/shared/schemas/file'
 import type { CreateFolderResponse } from '~~/shared/types/response/files'
 
-export const useCreateFolder = () => {
+export function useCreateFolder() {
   const overlay = useOverlay()
   const toast = useToast()
 
-  const openDialog = async (): Promise<string | null> => {
+  async function openDialog(): Promise<string | null> {
     const modal = overlay.create(DialogCreateNewFolder, {
       destroyOnClose: true,
     })
@@ -16,7 +16,7 @@ export const useCreateFolder = () => {
     return modal.open()
   }
 
-  const createFolder = async (body: FolderSchema) => {
+  async function createFolder(body: FolderSchema) {
     try {
       const validBody = folderSchema.parse(body)
 
@@ -37,7 +37,7 @@ export const useCreateFolder = () => {
     }
   }
 
-  const promptAndCreateFolder = async (parentFolderId: string | null = null) => {
+  async function promptAndCreateFolder(parentFolderId: string | null = null) {
     const res = await openDialog()
 
     if (res) {

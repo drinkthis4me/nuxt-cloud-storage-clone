@@ -9,9 +9,7 @@ interface UseTableSelectionOption<T> {
   onRowDoubleClick?: (row: TableRow<T>) => void
 }
 
-export const useTableSelection = <T>(
-  option: UseTableSelectionOption<T>,
-) => {
+export function useTableSelection<T>(option: UseTableSelectionOption<T>) {
   const {
     doubleClickOnly = false,
     table,
@@ -22,7 +20,7 @@ export const useTableSelection = <T>(
   const lastSelectedRowId = ref<string | null>(null)
   let clickTimeout: NodeJS.Timeout | null = null
 
-  const onSelect = (e: Event, row: TableRow<T>) => {
+  function onSelect(e: Event, row: TableRow<T>) {
     const mouseEvent = e as MouseEvent
 
     if (clickTimeout) {
@@ -53,7 +51,7 @@ export const useTableSelection = <T>(
     }, 250)
   }
 
-  const selectRange = (fromId: string, toId: string) => {
+  function selectRange(fromId: string, toId: string) {
     const rows = table.value?.tableApi?.getRowModel().rows
     if (!rows) return
 
@@ -70,14 +68,16 @@ export const useTableSelection = <T>(
     rowSelection.value = next
   }
 
-  const deselectAll = () => {
+  function deselectAll() {
     rowSelection.value = {}
     lastSelectedRowId.value = null
 
     // TODO: esc to deselect
   }
 
-  const getRowId = <T extends { id: string }>(row: T) => row.id
+  function getRowId<T extends { id: string }>(row: T) {
+    return row.id
+  }
 
   return {
     rowSelection,

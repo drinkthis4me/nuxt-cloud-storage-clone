@@ -24,7 +24,7 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
   const isPending = computed(() => status.value === 'pending')
 
   // Update fn for after editing file to avoid refetching
-  const patchFile = (fileIds: string[], updated: SerializedFile | null) => {
+  function patchFile(fileIds: string[], updated: SerializedFile | null) {
     if (!data.value?.files) return
 
     if (updated == null) {

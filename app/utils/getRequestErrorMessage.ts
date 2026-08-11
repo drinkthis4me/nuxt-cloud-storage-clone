@@ -1,9 +1,9 @@
 import type { FetchError } from 'ofetch'
 
-export const getRequestErrorMessage = (
+export function getRequestErrorMessage(
   err: unknown,
   defaultMessage: string = 'Something went wrong',
-): string => {
+): string {
   if (err && typeof err === 'object' && 'data' in err) {
     const fetchErr = err as FetchError
     const message = fetchErr.data?.message

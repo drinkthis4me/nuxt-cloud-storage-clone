@@ -18,7 +18,7 @@ const form = reactive<Partial<FolderSchema>>({
   parentFolderId: null,
 })
 
-const onSubmit = (e: FormSubmitEvent<FolderSchema>) => {
+function onSubmit(e: FormSubmitEvent<FolderSchema>) {
   emit('close', e.data.name)
 }
 </script>

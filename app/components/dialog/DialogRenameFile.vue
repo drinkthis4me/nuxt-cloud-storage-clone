@@ -25,7 +25,7 @@ const form = reactive<Schema>({
   name: props.name,
 })
 
-const onSubmit = (e: FormSubmitEvent<Schema>) => {
+function onSubmit(e: FormSubmitEvent<Schema>) {
   emit('close', e.data.name)
 }
 </script>

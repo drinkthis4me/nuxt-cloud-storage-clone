@@ -2,12 +2,12 @@ import { fileIdSchema } from '#shared/schemas/file'
 
 import type { DownloadUrlResponse } from '#shared/types/response/files'
 
-export const useDownloadFile = () => {
+export function useDownloadFile() {
   const toast = useToast()
 
   // TODO: show download progress
   // TODO: decompress file
-  const download = async (fileId: string) => {
+  async function download(fileId: string) {
     try {
       const param = { id: fileId }
       const validParam = fileIdSchema.parse(param)

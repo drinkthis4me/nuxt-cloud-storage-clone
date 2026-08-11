@@ -1,4 +1,4 @@
-export const formatFileSize = (fileSizeStr: string): string => {
+export function formatFileSize(fileSizeStr: string): string {
   let res = ''
 
   try {

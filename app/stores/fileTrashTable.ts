@@ -9,7 +9,7 @@ export const useFileTrashTableStore = defineStore('fileTrashTable', () => {
 
   const requestFetch = useRequestFetch()
 
-  const fetchFiles = async () => {
+  async function fetchFiles() {
     isLoading.value = true
 
     try {

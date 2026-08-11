@@ -1,4 +1,4 @@
-export const useAppColorMode = () => {
+export function useAppColorMode() {
   const colorMode = useColorMode()
 
   const isDark = computed({
@@ -10,7 +10,9 @@ export const useAppColorMode = () => {
     },
   })
 
-  const toggle = () => isDark.value = !isDark.value
+  function toggle() {
+    return isDark.value = !isDark.value
+  }
 
   return {
     colorMode,

@@ -2,7 +2,7 @@ import { userCreateSchema } from '~~/shared/schemas/user'
 
 import type { UserCreateSchema } from '~~/shared/schemas/user'
 
-export const useAppSignUp = () => {
+export function useAppSignUp() {
   const form = reactive<Partial<UserCreateSchema>>({
     email: '',
     password: '',
@@ -12,7 +12,7 @@ export const useAppSignUp = () => {
   const toast = useToast()
   const authStore = useAuthStore()
 
-  const signup = async (body: UserCreateSchema) => {
+  async function signup(body: UserCreateSchema) {
     isLoading.value = true
 
     try {

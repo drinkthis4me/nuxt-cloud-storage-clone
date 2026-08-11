@@ -2,10 +2,10 @@ import { fileIdSchema } from '#shared/schemas/file'
 
 import type { RestoreFileResponse } from '#shared/types/response/files'
 
-export const useRestoreFile = () => {
+export function useRestoreFile() {
   const toast = useToast()
 
-  const restore = async (fileIds: string[]) => {
+  async function restore(fileIds: string[]) {
     const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
     const validIds: string[] = []
@@ -19,10 +19,9 @@ export const useRestoreFile = () => {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id =>
-        $fetch<RestoreFileResponse>(`/api/files/${id}/restore`, {
-          method: 'POST',
-        }),
+      validIds.map(id => $fetch<RestoreFileResponse>(`/api/files/${id}/restore`, {
+        method: 'POST',
+      }),
       ),
     )
 

@@ -3,7 +3,7 @@ import { userLoginSchema } from '#shared/schemas/user'
 import type { UserLoginSchema } from '#shared/schemas/user'
 import type { LoginResponse } from '#shared/types/auth'
 
-export const useAppLogIn = () => {
+export function useAppLogIn() {
   const form = reactive<UserLoginSchema>({
     email: '',
     password: '',
@@ -13,7 +13,7 @@ export const useAppLogIn = () => {
   const toast = useToast()
   const authStore = useAuthStore()
 
-  const login = async (body: UserLoginSchema) => {
+  async function login(body: UserLoginSchema) {
     isLoading.value = true
     try {
       const validBody = userLoginSchema.parse(body)

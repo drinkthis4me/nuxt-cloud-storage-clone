@@ -4,7 +4,7 @@ import { getRequestErrorMessage } from '~/utils/getRequestErrorMessage'
 
 import type { UpdateFileResponse } from '#shared/types/response/files'
 
-export const useMoveFile = () => {
+export function useMoveFile() {
   const overlay = useOverlay()
   const toast = useToast()
 
@@ -14,7 +14,7 @@ export const useMoveFile = () => {
     movingIds: string[]
   }
 
-  const openDialog = async (props: OpenDialogOption): Promise<{ newParentFolderId: string | null } | null> => {
+  async function openDialog(props: OpenDialogOption): Promise<{ newParentFolderId: string | null } | null> {
     const modal = overlay.create(DialogMoveFile, { destroyOnClose: true })
 
     return modal.open(props)
@@ -25,7 +25,7 @@ export const useMoveFile = () => {
     failedIds: string[]
   }
 
-  const moveFiles = async (fileIds: string[], targetFolderId: string | null): Promise<MoveFilesResult> => {
+  async function moveFiles(fileIds: string[], targetFolderId: string | null): Promise<MoveFilesResult> {
     const parseResults = fileIds.map(id => fileIdSchema.safeParse({ id }))
 
     const validIds: string[] = []
@@ -39,11 +39,10 @@ export const useMoveFile = () => {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id =>
-        $fetch<UpdateFileResponse>(`/api/files/${id}`, {
-          method: 'PATCH',
-          body: { parentFolderId: targetFolderId },
-        }),
+      validIds.map(id => $fetch<UpdateFileResponse>(`/api/files/${id}`, {
+        method: 'PATCH',
+        body: { parentFolderId: targetFolderId },
+      }),
       ),
     )
 
@@ -87,10 +86,10 @@ export const useMoveFile = () => {
     return { succeededIds, failedIds }
   }
 
-  const promptAndMove = async (
-    filesToMove: { id: string, name: string }[],
+  async function promptAndMove(
+    filesToMove: { id: string, name: string } [],
     parentFolderId: string | null,
-  ): Promise<MoveFilesResult | null> => {
+  ): Promise<MoveFilesResult | null> {
     if (filesToMove.length === 0) return null
 
     const fileName = filesToMove.length === 1 ? filesToMove[0]!.name : `${filesToMove.length} files`

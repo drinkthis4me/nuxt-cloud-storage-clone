@@ -4,11 +4,11 @@ import { getRequestErrorMessage } from '~/utils/getRequestErrorMessage'
 
 import type { UpdateFileResponse } from '#shared/types/response/files'
 
-export const useRenameFile = () => {
+export function useRenameFile() {
   const overlay = useOverlay()
   const toast = useToast()
 
-  const openDialog = async (oldName: string): Promise<string | null> => {
+  async function openDialog(oldName: string): Promise<string | null> {
     const modal = overlay.create(DialogRenameFile,
       { destroyOnClose: true },
     )
@@ -16,7 +16,7 @@ export const useRenameFile = () => {
     return modal.open({ name: oldName })
   }
 
-  const rename = async (fileId: string, newName: string) => {
+  async function rename(fileId: string, newName: string) {
     const parseResult = fileIdSchema.safeParse({ id: fileId })
     if (!parseResult.success) {
       console.error('Parse file ID failed')
@@ -53,7 +53,7 @@ export const useRenameFile = () => {
     }
   }
 
-  const promptAndRename = async (fileId: string, oldName: string) => {
+  async function promptAndRename(fileId: string, oldName: string) {
     const res = await openDialog(oldName)
 
     if (!res || res === oldName) return null

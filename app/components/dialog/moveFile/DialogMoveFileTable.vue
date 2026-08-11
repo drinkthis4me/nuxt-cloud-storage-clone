@@ -75,7 +75,7 @@ const columns: TableColumn<SerializedFile>[] = [
 
 const table = useTemplateRef<UTableInstance<SerializedFile>>('table')
 
-const onRowDoubleClick = (row: TableRow<SerializedFile>) => {
+function onRowDoubleClick(row: TableRow<SerializedFile>) {
   if (row.original.isFolder) {
     emit('change-folder', row.original.id)
   }

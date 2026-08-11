@@ -114,7 +114,7 @@ const {
   },
 })
 
-const onContextMenu = (e: Event, row: TableRow<SerializedFile>) => {
+function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
   const tableApi = table.value?.tableApi
   const allRows = tableApi?.getRowModel().rows ?? [row]
   onContextMenuBase(e, row, allRows)

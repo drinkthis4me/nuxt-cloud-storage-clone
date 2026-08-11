@@ -116,7 +116,7 @@ const columns: TableColumn<SerializedFile>[] = [
 
 const table = useTemplateRef<UTableInstance<SerializedFile>>('table')
 
-const onRowDoubleClick = (row: TableRow<SerializedFile>) => {
+function onRowDoubleClick(row: TableRow<SerializedFile>) {
   if (row.original.isFolder) {
     navigateTo(`/app/folders/${row.original.id}`)
   }
@@ -145,14 +145,14 @@ const {
   onMoved: () => emit('refresh'),
 })
 
-const onContextMenu = (e: Event, row: TableRow<SerializedFile>) => {
+function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
   const tableApi = table.value?.tableApi
   const allRows = tableApi?.getRowModel().rows ?? [row]
   onContextMenuBase(e, row, allRows)
 }
 
 const { moveFiles } = useMoveFile()
-const onMoveFiles = async (fileIds: string[], targetFolderId: string) => {
+async function onMoveFiles(fileIds: string[], targetFolderId: string) {
   await moveFiles(fileIds, targetFolderId)
   emit('refresh')
 }

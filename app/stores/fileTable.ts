@@ -9,7 +9,7 @@ export const useFileTableStore = defineStore('fileTable', () => {
 
   const requestFetch = useRequestFetch()
 
-  const fetchFiles = async () => {
+  async function fetchFiles() {
     isLoading.value = true
 
     try {

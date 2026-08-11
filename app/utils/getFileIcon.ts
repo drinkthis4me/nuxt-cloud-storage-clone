@@ -25,7 +25,7 @@ const EXTENSION_MAP: Record<string, string> = {
   'vue': 'vscode-icons:file-type-vue',
 }
 
-export const getFileIcon = (file: { name: string, isFolder: boolean, mimeType: string }) => {
+export function getFileIcon(file: { name: string, isFolder: boolean, mimeType: string }) {
   if (file.isFolder) return 'vscode-icons:default-folder'
 
   const ext = file.name.split('.').pop()?.toLowerCase()

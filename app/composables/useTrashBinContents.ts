@@ -1,7 +1,7 @@
 import { fileScope, fileStatus } from '#shared/schemas/file'
 import type { SerializedFile, FileListResponse } from '#shared/types/response/files'
 
-export const useTrashBinContents = () => {
+export function useTrashBinContents() {
   const query = computed(() => ({
     scope: fileScope.MINE,
     status: fileStatus.DELETED,
@@ -9,10 +9,7 @@ export const useTrashBinContents = () => {
 
   // FIXME: extract to getFetchKey util
   const {
-    data,
-    status,
-    error,
-    refresh,
+    data, status, error, refresh,
   } = useFetch<FileListResponse>('/api/files', {
     key: 'trash-bin',
     query,
@@ -22,7 +19,7 @@ export const useTrashBinContents = () => {
   const isPending = computed(() => status.value === 'pending')
 
   // Update fn for after editing file to avoid refetching
-  const patchFile = (fileIds: string[], updated: SerializedFile | null) => {
+  function patchFile(fileIds: string[], updated: SerializedFile | null) {
     if (!data.value?.files) return
 
     if (updated == null) {
