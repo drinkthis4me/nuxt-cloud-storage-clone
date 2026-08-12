@@ -4,7 +4,7 @@ import { fileSchema } from '~~/shared/schemas/file'
 import type { FileSchema } from '~~/shared/schemas/file'
 import type {
   CreateFileUploadResponse,
-  CompleteUploadResponse,
+  FileResponse,
 } from '~~/shared/types/response/files'
 
 export function useUploadFile() {
@@ -58,7 +58,7 @@ export function useUploadFile() {
 
       const {
         file: completedFile,
-      } = await $fetch<CompleteUploadResponse>(
+      } = await $fetch<FileResponse>(
         `/api/files/${serverFileEntry.id}/complete`,
         { method: 'POST' },
       )

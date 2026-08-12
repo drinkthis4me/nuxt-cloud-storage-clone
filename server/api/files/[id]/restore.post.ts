@@ -2,10 +2,10 @@ import { usePrismaClient } from '#server/utils/prisma'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
 import { serializeFile } from '#server/utils/serializeFile'
 import { fileStatus, fileIdSchema } from '~~/shared/schemas/file'
-import type { RestoreFileResponse } from '~~/shared/types/response/files'
+import type { FileResponse } from '~~/shared/types/response/files'
 import type { File } from '~~/prisma/generated/client'
 
-export default defineEventHandler(async (event): Promise<RestoreFileResponse> => {
+export default defineEventHandler(async (event): Promise<FileResponse> => {
   const { user } = await requireUserSession(event)
   const { id: fileId } = await validateRequest(event, getValidatedRouterParams, fileIdSchema)
 

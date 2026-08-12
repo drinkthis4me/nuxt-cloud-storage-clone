@@ -1,7 +1,7 @@
 import { fileIdSchema } from '#shared/schemas/file'
 
 import type {
-  SoftDeleteFileResponse,
+  FileResponse,
   HardDeleteFileResponse,
 } from '#shared/types/response/files'
 
@@ -22,7 +22,7 @@ export function useDeleteFile() {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id => $fetch<SoftDeleteFileResponse>(`/api/files/${id}`, {
+      validIds.map(id => $fetch<FileResponse>(`/api/files/${id}`, {
         method: 'DELETE',
       }),
       ),

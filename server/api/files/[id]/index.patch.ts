@@ -4,9 +4,9 @@ import { serializeFile } from '#server/utils/serializeFile'
 import { fileIdSchema, editFileSchema, sharePermission } from '#shared/schemas/file'
 
 import type { PrismaClient, File } from '~~/prisma/generated/client'
-import type { UpdateFileResponse } from '#shared/types/response/files'
+import type { FileResponse } from '#shared/types/response/files'
 
-export default defineEventHandler(async (event): Promise<UpdateFileResponse> => {
+export default defineEventHandler(async (event): Promise<FileResponse> => {
   const { user } = await requireUserSession(event)
   const { id: fileId } = await validateRequest(event, getValidatedRouterParams, fileIdSchema)
   const body = await validateRequest(event, readValidatedBody, editFileSchema)

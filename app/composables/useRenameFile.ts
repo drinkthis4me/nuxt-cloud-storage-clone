@@ -2,7 +2,7 @@ import DialogRenameFile from '~/components/dialog/DialogRenameFile.vue'
 import { fileIdSchema } from '#shared/schemas/file'
 import { getRequestErrorMessage } from '~/utils/getRequestErrorMessage'
 
-import type { UpdateFileResponse } from '#shared/types/response/files'
+import type { FileResponse } from '#shared/types/response/files'
 
 export function useRenameFile() {
   const overlay = useOverlay()
@@ -32,7 +32,7 @@ export function useRenameFile() {
     }
 
     try {
-      const { file } = await $fetch<UpdateFileResponse>(
+      const { file } = await $fetch<FileResponse>(
         `/api/files/${validId}`,
         {
           method: 'PATCH',

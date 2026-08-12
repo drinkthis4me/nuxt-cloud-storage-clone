@@ -20,6 +20,18 @@ export interface SerializedFile {
   version: number
 }
 
+export interface FileResponse {
+  file: SerializedFile
+}
+
+export interface FileListResponse {
+  files: SerializedFile[]
+}
+
+export interface BreadcrumbsResponse {
+  breadcrumbs: SerializedFile[]
+}
+
 export interface CreateFolderResponse {
   file: SerializedFile
 }
@@ -32,33 +44,9 @@ export interface CreateFileUploadResponse {
 
 export type CreateFileResponse = CreateFolderResponse | CreateFileUploadResponse
 
-export interface CompleteUploadResponse {
-  file: SerializedFile
-}
-
-export interface FileListResponse {
-  files: SerializedFile[]
-}
-
-export interface FileDetailResponse {
-  file: SerializedFile
-}
-
-export interface BreadcrumbsResponse {
-  breadcrumbs: SerializedFile[]
-}
-
-export interface UpdateFileResponse {
-  file: SerializedFile
-}
-
 export interface DownloadUrlResponse {
   downloadUrl: string
   expiresIn: number
-}
-
-export interface SoftDeleteFileResponse {
-  file: SerializedFile
 }
 
 export interface HardDeleteFileResponse {
@@ -66,8 +54,4 @@ export interface HardDeleteFileResponse {
   deleted: true
 }
 
-export type DeleteFileResponse = SoftDeleteFileResponse | HardDeleteFileResponse
-
-export interface RestoreFileResponse {
-  file: SerializedFile
-}
+export type DeleteFileResponse = FileResponse | HardDeleteFileResponse

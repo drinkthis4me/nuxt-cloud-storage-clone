@@ -2,7 +2,7 @@ import DialogMoveFile from '~/components/dialog/moveFile/DialogMoveFile.vue'
 import { fileIdSchema } from '#shared/schemas/file'
 import { getRequestErrorMessage } from '~/utils/getRequestErrorMessage'
 
-import type { UpdateFileResponse } from '#shared/types/response/files'
+import type { FileResponse } from '#shared/types/response/files'
 
 export function useMoveFile() {
   const overlay = useOverlay()
@@ -39,7 +39,7 @@ export function useMoveFile() {
     }
 
     const results = await Promise.allSettled(
-      validIds.map(id => $fetch<UpdateFileResponse>(`/api/files/${id}`, {
+      validIds.map(id => $fetch<FileResponse>(`/api/files/${id}`, {
         method: 'PATCH',
         body: { parentFolderId: targetFolderId },
       }),

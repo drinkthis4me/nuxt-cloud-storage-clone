@@ -9,9 +9,9 @@ import type { NitroRuntimeConfig } from 'nitropack/types'
 import type { PrismaClient, File } from '~~/prisma/generated/client'
 import type { S3Client } from '@aws-sdk/client-s3'
 import type {
+  FileResponse,
   DeleteFileResponse,
   HardDeleteFileResponse,
-  SoftDeleteFileResponse,
 } from '~~/shared/types/response/files'
 
 export default defineEventHandler(async (event): Promise<DeleteFileResponse> => {
@@ -119,7 +119,7 @@ async function hardDelete(
 async function softDelete(
   file: { id: string },
   prismaClient: PrismaClient,
-): Promise<SoftDeleteFileResponse> {
+): Promise<FileResponse> {
   let updated
 
   try {

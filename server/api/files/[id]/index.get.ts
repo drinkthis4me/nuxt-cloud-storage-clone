@@ -3,9 +3,9 @@ import { HTTP_STATUS } from '#server/utils/httpStatus'
 import { serializeFile } from '#server/utils/serializeFile'
 import { fileIdSchema } from '#shared/schemas/file'
 
-import type { FileDetailResponse } from '#shared/types/response/files'
+import type { FileResponse } from '#shared/types/response/files'
 
-export default defineEventHandler(async (event): Promise<FileDetailResponse> => {
+export default defineEventHandler(async (event): Promise<FileResponse> => {
   const { user } = await requireUserSession(event)
   const { id: fileId } = await validateRequest(event, getValidatedRouterParams, fileIdSchema)
 

@@ -2,12 +2,13 @@ import { HTTP_STATUS } from '#server/utils/httpStatus'
 import { usePrismaClient } from '#server/utils/prisma'
 import { validateRequest } from '#server/utils/validateRequest'
 import { HeadObjectCommand } from '@aws-sdk/client-s3'
-import { serializeFile } from '~~/server/utils/serializeFile'
-import { fileIdSchema, fileStatus } from '~~/shared/schemas/file'
+import { serializeFile } from '#server/utils/serializeFile'
+import { fileIdSchema, fileStatus } from '#shared/schemas/file'
 
 import type { File } from '~~/prisma/generated/client'
+import type { FileResponse } from '#shared/types/response/files'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<FileResponse> => {
   const { user } = await requireUserSession(event)
   const { id: fileId } = await validateRequest(event, getValidatedRouterParams, fileIdSchema)
 
