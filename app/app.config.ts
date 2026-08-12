@@ -1,4 +1,7 @@
 export default defineAppConfig({
+  storage: {
+    quotaBytes: 10 * 1024 * 1024 * 1024, // 10 GB
+  },
   ui: {
     colors: {
       primary: 'blue',

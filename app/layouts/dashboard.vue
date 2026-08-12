@@ -96,19 +96,14 @@ const links = [
               popover
             />
 
-            <div
-              v-show="!collapsed"
-              class="mt-auto p-4"
-            >
-              <StorageUsage />
-            </div>
+            <StorageUsage v-show="!collapsed" />
 
             <UNavigationMenu
               :collapsed="collapsed"
               :items="links[1]"
               orientation="vertical"
               tooltip
-              class="mt-auto"
+              class=""
             />
           </template>
         </UDashboardSidebar>
