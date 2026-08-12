@@ -1,11 +1,11 @@
 <script lang="ts">
 import type { TableColumn, TableRow } from '@nuxt/ui'
-import type { SerializedFile } from '~~/shared/types/response/files'
+import type { SerializedFile } from '#shared/types/response/files'
 import type { UTableInstance } from '~/types/UTableInstance'
 </script>
 
 <script setup lang="ts">
-import { Icon, UCheckbox, UTable } from '#components'
+import { Icon, UTable } from '#components'
 import { getFileIcon } from '~~/app/utils/getFileIcon'
 import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
@@ -21,31 +21,12 @@ const {
 
 const emit = defineEmits<{
   'refresh': []
-  'file-updated': [file: SerializedFile]
-  'file-deleted': [fileIds: SerializedFile['id'][]]
+  'file-deleted': [ids: SerializedFile['id'][]]
 }>()
 
+const { promptAndUploadFile } = useUploadFile()
+
 const columns: TableColumn<SerializedFile>[] = [
-  {
-    id: 'select',
-    header: ({ table }) =>
-      h(UCheckbox, {
-        'modelValue': table.getIsSomePageRowsSelected()
-          ? 'indeterminate'
-          : table.getIsAllPageRowsSelected(),
-        'onUpdate:modelValue': (value: unknown) =>
-          table.toggleAllPageRowsSelected(!!value), // value: boolean | 'indeterminate'
-        'aria-label': 'Select all',
-      }),
-    cell: ({ row }) =>
-      h(UCheckbox, {
-        'modelValue': row.getIsSelected(),
-        'onUpdate:modelValue': (value: unknown) =>
-          row.toggleSelected(!!value), // value: boolean | 'indeterminate'
-        'aria-label': 'Select row',
-        'onClick': (e: Event) => e.stopPropagation(),
-      }),
-  },
   {
     accessorKey: 'name',
     header: 'Name',
@@ -67,14 +48,6 @@ const columns: TableColumn<SerializedFile>[] = [
     header: 'Type',
   },
   {
-    accessorKey: 'deletedAt',
-    header: 'Trashed Timestamp',
-    cell: ({ row }) => {
-      const formatted = isoToLocalDateTime(row.original.deletedAt)
-      return h('span', {}, formatted)
-    },
-  },
-  {
     accessorKey: 'updatedAt',
     header: 'Last Modified',
     cell: ({ row }) => {
@@ -92,26 +65,15 @@ const columns: TableColumn<SerializedFile>[] = [
   },
 ]
 
-const table = useTemplateRef<UTableInstance<SerializedFile>>('trash-table')
-
-const {
-  rowSelection,
-  getRowId,
-  onSelect,
-  deselectAll,
-} = useTableSelection<SerializedFile>({ table })
+const table = useTemplateRef<UTableInstance<SerializedFile>>('table')
 
 const {
   contextMenuItems,
   onContextMenu: onContextMenuBase,
 } = useTableContextMenu({
-  table: 'trash-bin',
-  rowSelection,
-  onRestored: ids => emit('file-deleted', ids),
-  onHardDeleted: ids => emit('file-deleted', ids),
-  onSelectionReplaced: (rowId) => {
-    rowSelection.value = { [rowId]: true }
-  },
+  onRenamed: () => emit('refresh'),
+  onMoved: () => emit('refresh'),
+  onSoftDeleted: ids => emit('file-deleted', ids),
 })
 
 function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
@@ -122,24 +84,35 @@ function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
 </script>
 
 <template>
+  <HeroEmpty
+    v-if="!loading && files.length === 0"
+    title="No files. Start uploading files."
+  >
+    <template #default>
+      <UButton
+        label=" Upload now"
+        size="xl"
+        class="capitalize"
+        @click="promptAndUploadFile"
+      />
+    </template>
+  </HeroEmpty>
   <div
+    v-else
     class="flex-1 flex flex-col"
-    @click.self="deselectAll"
   >
     <UContextMenu :items="contextMenuItems">
       <UTable
-        ref="trash-table"
-        v-model:row-selection="rowSelection"
+        ref="table"
         :data="files"
-        :loading="loading"
         :columns="columns"
-        :get-row-id="getRowId"
+        :get-row-id="row => row.id"
+        :loading="loading"
         :ui="{
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',
         }"
         class="border-1 border-accented shadow-lg"
         @contextmenu="onContextMenu"
-        @select="onSelect"
       />
     </UContextMenu>
   </div>

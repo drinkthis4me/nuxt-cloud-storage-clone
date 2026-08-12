@@ -8,6 +8,11 @@ const { toggle: toggleColorMode } = useAppColorMode()
 const links = [
   [
     {
+      label: 'Home',
+      icon: 'i-lucide-house',
+      to: '/app',
+    },
+    {
       label: 'My files',
       icon: 'i-lucide-folder',
       to: '/app/folders',
@@ -15,23 +20,18 @@ const links = [
     {
       label: 'Favorite',
       icon: 'i-lucide-star',
-      to: '/app',
-    },
-    {
-      label: 'Recent',
-      icon: 'i-lucide-clock',
-      to: '/app',
+      // to: '/app/favorite',
     },
     {
       label: 'Shared',
       icon: 'i-lucide-link',
-      to: '/app',
+      // to: '/app/share',
     },
-    {
-      label: 'Shared with me',
-      icon: 'i-lucide-users',
-      to: '/app',
-    },
+    // {
+    //   label: 'Shared with me',
+    //   icon: 'i-lucide-users',
+    //   // to: '/app',
+    // },
     {
       label: 'Trash bin',
       icon: 'i-lucide-trash',

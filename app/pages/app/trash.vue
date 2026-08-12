@@ -19,6 +19,11 @@ function handleFileUpdated(updated: SerializedFile) {
 function handleFileDeleted(fileIds: string[]) {
   patchFile(fileIds, null)
 }
+
+const init = ref(true)
+watch(isPending, (val) => {
+  if (val) init.value = true
+}, { once: true })
 </script>
 
 <template>
@@ -37,11 +42,11 @@ function handleFileDeleted(fileIds: string[]) {
     </template>
 
     <template #body>
-      <HeroNotFound
-        v-if="files.length === 0"
+      <HeroLoading v-if="isPending && init" />
+      <HeroEmpty
+        v-else-if="files.length === 0"
         icon="i-lucide-trash-2"
         title="Trash bin is empty"
-        description="No items in trash bin"
       />
       <FileTrashTable
         v-else

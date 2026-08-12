@@ -76,7 +76,7 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
           @click="emit('close', null)"
         />
         <UButton
-          label="Create"
+          label="Submit"
           size="lg"
           type="button"
           @click="formRef?.submit()"

@@ -4,7 +4,16 @@ definePageMeta({
   middleware: 'auth',
 })
 
-// TODO: Recent/Suggest files
+const {
+  files,
+  isPending,
+  refresh,
+  patchFile,
+} = useRecentFiles()
+
+function handleFileDeleted(ids: string[]) {
+  patchFile(ids)
+}
 </script>
 
 <template>
@@ -12,7 +21,7 @@ definePageMeta({
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          Welcome
+          <h1>Recent files</h1>
         </template>
         <template #leading>
           <UDashboardSidebarCollapse />
@@ -21,7 +30,14 @@ definePageMeta({
     </template>
 
     <template #body>
-      app
+      <HeroLoading v-if="isPending" />
+      <FileRecentTable
+        v-else
+        :files
+        :loading="isPending"
+        @refresh="refresh"
+        @file-deleted="handleFileDeleted"
+      />
     </template>
   </UDashboardPanel>
 </template>

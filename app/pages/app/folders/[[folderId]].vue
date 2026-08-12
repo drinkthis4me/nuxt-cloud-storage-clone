@@ -38,11 +38,7 @@ function handleFileDeleted(fileIds: string[]) {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <FileBreadcrumb
-            v-if="!notFound"
-            :breadcrumbs
-            :is-refreshing="isRefreshing"
-          />
+          <h1>My files</h1>
         </template>
         <template #leading>
           <UDashboardSidebarCollapse />
@@ -51,6 +47,12 @@ function handleFileDeleted(fileIds: string[]) {
     </template>
 
     <template #body>
+      <FileBreadcrumb
+        v-if="!notFound"
+        :breadcrumbs
+        :is-refreshing="isRefreshing"
+        class="px-2"
+      />
       <HeroNotFound v-if="notFound" />
       <FileTable
         v-else

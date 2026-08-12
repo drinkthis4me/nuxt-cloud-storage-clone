@@ -27,7 +27,7 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
   function patchFile(fileIds: string[], updated: SerializedFile | null) {
     if (!data.value?.files) return
 
-    if (updated == null) {
+    if (updated === null) {
       // Files deleted
       const idSet = new Set(fileIds)
       data.value = {

@@ -58,6 +58,10 @@ export const fileListSchema = z.object({
   status: statusList.default([fileStatus.UPLOADED, fileStatus.UPLOADING]),
 })
 
+export const recentFileListSchema = z.object({
+  limit: z.coerce.number().int().positive().max(100).default(20),
+})
+
 export const editFileSchema = z
   .object({
     name: name.optional(),

@@ -177,7 +177,7 @@ useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
           tbody: 'table-tbody-class-for-sortablejs',
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',
         }"
-        class=""
+        class="border-1 border-accented shadow-lg"
         @contextmenu="onContextMenu"
         @select="onSelect"
       />
