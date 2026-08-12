@@ -20,6 +20,11 @@ export function useTableSelection<T>(option: UseTableSelectionOption<T>) {
   const lastSelectedRowId = ref<string | null>(null)
   let clickTimeout: NodeJS.Timeout | null = null
 
+  function deselectAll() {
+    rowSelection.value = {}
+    lastSelectedRowId.value = null
+  }
+
   function onSelect(e: Event, row: TableRow<T>) {
     const mouseEvent = e as MouseEvent
 
@@ -28,6 +33,7 @@ export function useTableSelection<T>(option: UseTableSelectionOption<T>) {
       clearTimeout(clickTimeout)
       clickTimeout = null
 
+      deselectAll()
       onRowDoubleClick?.(row)
       return
     }
@@ -68,16 +74,17 @@ export function useTableSelection<T>(option: UseTableSelectionOption<T>) {
     rowSelection.value = next
   }
 
-  function deselectAll() {
-    rowSelection.value = {}
-    lastSelectedRowId.value = null
-
-    // TODO: esc to deselect
-  }
-
   function getRowId<T extends { id: string }>(row: T) {
     return row.id
   }
+
+  onMounted(() => {
+    useEventListener(document, 'keydown', (e) => {
+      if (e.key === 'Escape') {
+        deselectAll()
+      }
+    })
+  })
 
   return {
     rowSelection,
