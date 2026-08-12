@@ -19,6 +19,7 @@ export function useDownloadFile() {
 
       const link = document.createElement('a')
       link.href = downloadUrl
+      link.target = '_blank'
       link.click()
       link.remove()
     }
