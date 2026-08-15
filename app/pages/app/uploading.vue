@@ -60,6 +60,7 @@ onMounted(() => {
         <template #default>
           <UButton
             label="Refresh"
+            size="xl"
             :loading="store.isLoading"
             @click="store.hydrateFromServer()"
           />

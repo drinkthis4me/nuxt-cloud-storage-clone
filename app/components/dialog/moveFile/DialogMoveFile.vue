@@ -33,7 +33,7 @@ function onMoveClick() {
 // Breadcrumbs
 const {
   breadcrumbs,
-  isRefreshing,
+  isPending: isBreadcrumbsPending,
   error: breadcrumbsError,
 } = useBreadcrumbs(currentParentFolderId)
 const notFound = computed(() => currentParentFolderId.value !== null && !!breadcrumbsError.value)
@@ -68,15 +68,14 @@ async function onCreateFolderClick() {
   >
     <template #body>
       <div>
-        <div :class="{ 'opacity-60': isRefreshing }">
+        <div :class="{ 'opacity-60': isBreadcrumbsPending }">
           <DialogMoveFileBreadcrumbs
-            v-if="!notFound"
             :breadcrumbs
-            :is-refreshing="isRefreshing"
+            :is-refreshing="isBreadcrumbsPending"
             @change-folder="handleChangeFolder"
           />
           <p
-            v-else
+            v-if="notFound"
             class="text-sm text-muted"
           >
             This folder is no longer available.

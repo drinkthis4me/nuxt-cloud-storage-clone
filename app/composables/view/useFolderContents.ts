@@ -9,11 +9,11 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
     scope: fileScope.MINE,
   }))
 
-  // FIXME: extract to getFetchKey util
   const {
     data,
-    status,
     error,
+    status,
+    pending,
     refresh,
   } = useFetch<FileListResponse>('/api/files', {
     key: computed(() => getFolderKey(parentFolderId)),
@@ -21,8 +21,15 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
     watch: [parentFolderId],
   })
 
+  const isFirstPending = shallowRef(true)
+
+  watchOnce(status, (val) => {
+    if (val === 'success' || val === 'error') {
+      isFirstPending.value = false
+    }
+  })
+
   const files = computed(() => data.value?.files ?? [])
-  const isPending = computed(() => status.value === 'pending')
 
   // Update fn for after editing file to avoid refetching
   function patchFile(fileIds: string[], updated: SerializedFile | null) {
@@ -47,7 +54,8 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
 
   return {
     files,
-    isPending,
+    isPending: pending,
+    isFirstPending,
     error,
     refresh,
     patchFile,

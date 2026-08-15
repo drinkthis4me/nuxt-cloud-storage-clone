@@ -162,7 +162,7 @@ useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
 
 <template>
   <div
-    class="flex-1 flex flex-col"
+    class="flex flex-col"
     @click.self="deselectAll"
   >
     <UContextMenu :items="contextMenuItems">
@@ -173,6 +173,7 @@ useSortable('.table-tbody-class-for-sortablejs', files, sortableOptions)
         :columns="columns"
         :get-row-id="getRowId"
         :loading="loading"
+        empty="No files"
         :ui="{
           tbody: 'table-tbody-class-for-sortablejs',
           tr: 'cursor-pointer hover:bg-elevated/50 data-[selected=true]:bg-primary/10 hover:data-[selected=true]:bg-primary/15',

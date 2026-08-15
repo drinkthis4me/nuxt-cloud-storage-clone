@@ -9,6 +9,7 @@ definePageMeta({
 const {
   files,
   isPending,
+  isFirstPending,
   refresh,
   patchFile,
 } = useTrashBinContents()
@@ -19,11 +20,6 @@ function handleFileUpdated(updated: SerializedFile) {
 function handleFileDeleted(fileIds: string[]) {
   patchFile(fileIds, null)
 }
-
-const init = ref(true)
-watch(isPending, (val) => {
-  if (val) init.value = true
-}, { once: true })
 </script>
 
 <template>
@@ -42,12 +38,15 @@ watch(isPending, (val) => {
     </template>
 
     <template #body>
-      <HeroLoading v-if="isPending && init" />
+      <HeroLoading v-if="isFirstPending" />
+
       <HeroEmpty
         v-else-if="files.length === 0"
         icon="i-lucide-trash-2"
         title="Trash bin is empty"
+        hide-button
       />
+
       <FileTrashTable
         v-else
         :files

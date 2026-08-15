@@ -5,7 +5,8 @@ export function useBreadcrumbs(folderId: MaybeRefOrGetter<string | null>) {
 
   const data = shallowRef<BreadcrumbsResponse | null>(null)
   const lastBreadcrumbs = shallowRef<BreadcrumbsResponse['breadcrumbs']>([])
-  const isRefreshing = shallowRef(false)
+  const isPending = shallowRef(false)
+  const isFirstPending = shallowRef(true)
   const error = shallowRef<unknown>(null)
 
   watch(
@@ -18,19 +19,26 @@ export function useBreadcrumbs(folderId: MaybeRefOrGetter<string | null>) {
         return
       }
 
-      isRefreshing.value = true
+      isPending.value = true
       try {
         data.value = await $fetch<BreadcrumbsResponse>(`/api/files/${currentId}/breadcrumbs`)
         if (data.value?.breadcrumbs) {
           lastBreadcrumbs.value = data.value.breadcrumbs
         }
+        isFirstPending.value = false
       }
       catch (err) {
         console.error('Failed to fetch breadcrumbs', err)
         error.value = err
+        throw createError({
+          fatal: true,
+          status: 404,
+          statusText: 'Folder/File Not found',
+          cause: err,
+        })
       }
       finally {
-        isRefreshing.value = false
+        isPending.value = false
       }
     },
     { immediate: true },
@@ -40,7 +48,8 @@ export function useBreadcrumbs(folderId: MaybeRefOrGetter<string | null>) {
 
   return {
     breadcrumbs,
-    isRefreshing,
     error,
+    isPending,
+    isFirstPending,
   }
 }

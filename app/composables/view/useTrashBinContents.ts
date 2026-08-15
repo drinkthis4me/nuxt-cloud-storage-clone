@@ -9,14 +9,24 @@ export function useTrashBinContents() {
 
   // FIXME: extract to getFetchKey util
   const {
-    data, status, error, refresh,
+    data,
+    status,
+    pending,
+    error,
+    refresh,
   } = useFetch<FileListResponse>('/api/files', {
     key: 'trash-bin',
     query,
   })
 
+  const isFirstPending = shallowRef(true)
+  watchOnce(status, (val) => {
+    if (val === 'success' || val === 'error') {
+      isFirstPending.value = false
+    }
+  })
+
   const files = computed(() => data.value?.files ?? [])
-  const isPending = computed(() => status.value === 'pending')
 
   // Update fn for after editing file to avoid refetching
   function patchFile(fileIds: string[], updated: SerializedFile | null) {
@@ -41,7 +51,8 @@ export function useTrashBinContents() {
 
   return {
     files,
-    isPending,
+    isPending: pending,
+    isFirstPending,
     error,
     refresh,
     patchFile,

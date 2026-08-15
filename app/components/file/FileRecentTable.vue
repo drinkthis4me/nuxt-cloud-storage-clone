@@ -24,8 +24,6 @@ const emit = defineEmits<{
   'file-deleted': [ids: SerializedFile['id'][]]
 }>()
 
-const { promptAndUploadFile } = useUploadFile()
-
 const columns: TableColumn<SerializedFile>[] = [
   {
     accessorKey: 'name',
@@ -84,23 +82,7 @@ function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
 </script>
 
 <template>
-  <HeroEmpty
-    v-if="!loading && files.length === 0"
-    title="No files. Start uploading files."
-  >
-    <template #default>
-      <UButton
-        label=" Upload now"
-        size="xl"
-        class="capitalize"
-        @click="promptAndUploadFile"
-      />
-    </template>
-  </HeroEmpty>
-  <div
-    v-else
-    class="flex-1 flex flex-col"
-  >
+  <div class="flex flex-col">
     <UContextMenu :items="contextMenuItems">
       <UTable
         ref="table"

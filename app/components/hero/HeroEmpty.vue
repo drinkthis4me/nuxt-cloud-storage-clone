@@ -2,7 +2,10 @@
 defineProps<{
   icon?: string
   title?: string
+  hideButton?: boolean
 }>()
+
+const { promptAndUploadFile } = useUploadFile()
 </script>
 
 <template>
@@ -11,17 +14,20 @@ defineProps<{
       :name="icon ?? 'i-lucide-file-search'"
       class="size-16 text-muted"
     />
-    <div>
+    <div class="space-y-4">
       <p class="text-2xl font-medium">
-        {{ title ?? 'No files.' }}
+        {{ title ?? 'No files. What are you waiting for?' }}
       </p>
 
-      <div
-        v-if="$slots.default"
-        class="mt-4"
-      >
-        <slot />
-      </div>
+      <slot>
+        <UButton
+          v-if="!hideButton"
+          label="Upload now"
+          size="xl"
+          class="capitalize"
+          @click="promptAndUploadFile"
+        />
+      </slot>
     </div>
   </div>
 </template>

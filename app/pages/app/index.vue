@@ -7,6 +7,7 @@ definePageMeta({
 const {
   files,
   isPending,
+  isFirstPending,
   refresh,
   patchFile,
 } = useRecentFiles()
@@ -30,11 +31,15 @@ function handleFileDeleted(ids: string[]) {
     </template>
 
     <template #body>
-      <HeroLoading v-if="isPending" />
+      <HeroLoading v-if="isPending && isFirstPending" />
+
+      <HeroEmpty v-else-if="files.length === 0" />
+
       <FileRecentTable
         v-else
         :files
         :loading="isPending"
+        class="flex-1"
         @refresh="refresh"
         @file-deleted="handleFileDeleted"
       />

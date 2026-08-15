@@ -4,14 +4,21 @@ export function useRecentFiles(limit: MaybeRefOrGetter<number> = 20) {
   const {
     data,
     status,
+    pending,
     error,
     refresh,
   } = useFetch<FileListResponse>('/api/files/recent', {
     query: computed(() => ({ limit: toValue(limit) })),
   })
 
+  const isFirstPending = shallowRef(true)
+  watchOnce(status, (val) => {
+    if (val === 'success' || val === 'error') {
+      isFirstPending.value = false
+    }
+  })
+
   const files = computed(() => data.value?.files ?? [])
-  const isPending = computed(() => status.value === 'pending')
 
   function patchFile(fileIds: string[]) {
     if (!data.value?.files) return
@@ -26,7 +33,8 @@ export function useRecentFiles(limit: MaybeRefOrGetter<number> = 20) {
 
   return {
     files,
-    isPending,
+    isPending: pending,
+    isFirstPending,
     error,
     refresh,
     patchFile,
