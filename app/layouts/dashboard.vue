@@ -27,11 +27,11 @@ const links = [
       icon: 'i-lucide-link',
       // to: '/app/share',
     },
-    // {
-    //   label: 'Shared with me',
-    //   icon: 'i-lucide-users',
-    //   // to: '/app',
-    // },
+    {
+      label: 'Upload Progress',
+      icon: 'i-lucide-circle-fading-arrow-up',
+      to: '/app/uploading',
+    },
     {
       label: 'Trash bin',
       icon: 'i-lucide-trash',

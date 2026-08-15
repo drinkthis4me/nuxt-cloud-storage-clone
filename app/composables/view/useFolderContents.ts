@@ -1,4 +1,5 @@
 import { fileScope } from '#shared/schemas/file'
+
 import type { SerializedFile, FileListResponse } from '#shared/types/response/files'
 
 export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => {
@@ -15,7 +16,7 @@ export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => 
     error,
     refresh,
   } = useFetch<FileListResponse>('/api/files', {
-    key: computed(() => `folder-contents-${parentFolderId.value ?? 'root'}`),
+    key: computed(() => getFolderKey(parentFolderId)),
     query,
     watch: [parentFolderId],
   })

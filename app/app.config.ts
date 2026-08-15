@@ -2,6 +2,10 @@ export default defineAppConfig({
   storage: {
     quotaBytes: 10 * 1024 * 1024 * 1024, // 10 GB
   },
+  chunk: {
+    sizeBytes: 8 * 1024 * 1024, // 8MB (S3 requires >= 5 MB)
+    thresholdBytes: 32 * 1024 * 1024, // 32 MB (files above this use multipart upload)
+  },
   ui: {
     colors: {
       primary: 'blue',
