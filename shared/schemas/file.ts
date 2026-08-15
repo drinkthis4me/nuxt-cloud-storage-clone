@@ -72,5 +72,5 @@ export const editFileSchema = z
   })
 
 export const deleteFileSchema = z.object({
-  permanent: z.boolean().default(false),
+  permanent: z.coerce.boolean().default(false),
 })

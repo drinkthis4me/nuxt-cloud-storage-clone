@@ -9,12 +9,14 @@ import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { z } from 'zod'
 import { fileStatus, sharePermission } from '~~/shared/schemas/file'
+import { uploadStrategy } from '~~/shared/const/uploadStrategy'
 
 import type {
   CreateFileResponse,
   CreateFileUploadResponse,
   CreateFolderResponse,
-} from '#shared/types/response/files'
+} from '~~/shared/types/response/files'
+import type { FolderSchema, FileSchema } from '#shared/schemas/file'
 import type { H3Event } from 'h3'
 import type { PrismaClient } from '~~/prisma/generated/client'
 
@@ -71,7 +73,7 @@ async function assertParentFolderIsValid(
  */
 async function createFolder(
   event: H3Event,
-  body: z.infer<typeof folderSchema>,
+  body: FolderSchema,
   userId: number,
   prismaClient: PrismaClient,
 ): Promise<CreateFolderResponse> {
@@ -106,11 +108,12 @@ async function createFolder(
  */
 async function createFileUpload(
   event: H3Event,
-  body: z.infer<typeof fileSchema>,
+  body: FileSchema,
   userId: number,
   prismaClient: PrismaClient,
 ): Promise<CreateFileUploadResponse> {
   const config = useRuntimeConfig(event)
+  const appConfig = useAppConfig()
 
   // Dedup check: same user, same content already uploaded
   let existing
@@ -130,7 +133,10 @@ async function createFileUpload(
 
   if (existing) {
     setResponseStatus(event, 200) // not a new resource — nothing was created
-    return { duplicate: true, file: serializeFile(existing) }
+    return {
+      duplicate: true,
+      file: serializeFile(existing),
+    }
   }
 
   const fileId = crypto.randomUUID()
@@ -157,6 +163,17 @@ async function createFileUpload(
     throw createError({ ...HTTP_STATUS.INTERNAL_SERVER_ERROR })
   }
 
+  const isChunked = Number(body.size) > appConfig.chunk.thresholdBytes
+  if (isChunked) {
+    // Client should call "POST /api/files/chunks/init" next
+    setResponseStatus(event, 201)
+    return {
+      duplicate: false,
+      file: serializeFile(file),
+      uploadStrategy: uploadStrategy.CHUNKED,
+    }
+  }
+
   let uploadUrl: string
   try {
     const s3 = useS3Client()
@@ -173,5 +190,10 @@ async function createFileUpload(
   }
 
   setResponseStatus(event, 201)
-  return { duplicate: false, file: serializeFile(file), uploadUrl }
+  return {
+    duplicate: false,
+    file: serializeFile(file),
+    uploadStrategy: uploadStrategy.SINGLE,
+    uploadUrl,
+  }
 }

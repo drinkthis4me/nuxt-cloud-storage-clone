@@ -7,7 +7,7 @@ export default defineEventHandler(async (event): Promise<StorageResponse> => {
   const { user } = await requireUserSession(event)
 
   const prismaClient = usePrismaClient()
-  const config = useAppConfig(event)
+  const config = useAppConfig()
 
   try {
     const summary = await prismaClient.file.aggregate({

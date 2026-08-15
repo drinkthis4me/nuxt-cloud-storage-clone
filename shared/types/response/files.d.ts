@@ -1,7 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
+/* eslint-disable @typescript-eslint/consistent-type-imports */
 import { fileStatus } from '~~/shared/schemas/file'
+import { uploadStrategy } from '~~/shared/const/uploadStrategy'
 
-export type FileStatusEnum = keyof typeof fileStatus
+export type FileStatusEnum = (typeof fileStatus)[keyof typeof fileStatus]
 
 export interface SerializedFile {
   id: string
@@ -36,11 +37,12 @@ export interface CreateFolderResponse {
   file: SerializedFile
 }
 
-export interface CreateFileUploadResponse {
-  duplicate: boolean
-  file: SerializedFile
-  uploadUrl?: string
-}
+export type UploadStrategyEnum = typeof uploadStrategy
+
+export type CreateFileUploadResponse
+  = { duplicate: true, file: SerializedFile }
+    | { duplicate: false, file: SerializedFile, uploadStrategy: UploadStrategyEnum['SINGLE'], uploadUrl: string }
+    | { duplicate: false, file: SerializedFile, uploadStrategy: UploadStrategyEnum['CHUNKED'] }
 
 export type CreateFileResponse = CreateFolderResponse | CreateFileUploadResponse
 

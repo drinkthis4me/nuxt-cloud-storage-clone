@@ -37,6 +37,7 @@ model File {
   fingerprint    String
   storageKey     String
   status         FileStatus @default(UPLOADING)
+  uploadId       String?
   isFolder       Boolean    @default(false)
   parentFolderId String?
   parent         File?      @relation("FolderContents", fields: [parentFolderId], references: [id], onDelete: Cascade)
@@ -61,7 +62,7 @@ enum FileStatus {
 }
 
 model FileChunk {
-  id         String      @id @default(nanoid())
+  id         String      @id
   fileId     String
   file       File        @relation(fields: [fileId], references: [id], onDelete: Cascade)
   partNumber Int
