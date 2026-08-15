@@ -7,7 +7,7 @@
       <AppLogo />
     </NuxtLink>
 
-    <AppSearchbar class="w-1/2 mx-10" />
+    <AppSearchbar class="hidden lg:block w-1/2 mx-10" />
 
     <AppAvatar />
   </header>
