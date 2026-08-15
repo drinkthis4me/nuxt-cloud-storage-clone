@@ -31,9 +31,6 @@ function handleFileDeleted(fileIds: string[]) {
             Trash bin
           </h1>
         </template>
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
       </UDashboardNavbar>
     </template>
 

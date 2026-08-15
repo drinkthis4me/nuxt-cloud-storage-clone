@@ -53,9 +53,6 @@ watch(error, (val) => {
         <template #title>
           <h1>My files</h1>
         </template>
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
       </UDashboardNavbar>
     </template>
 

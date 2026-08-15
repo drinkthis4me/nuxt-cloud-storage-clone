@@ -24,9 +24,6 @@ function handleFileDeleted(ids: string[]) {
         <template #title>
           <h1>Recent files</h1>
         </template>
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
       </UDashboardNavbar>
     </template>
 

@@ -45,9 +45,6 @@ onMounted(() => {
             Upload progress
           </h1>
         </template>
-        <template #leading>
-          <UDashboardSidebarCollapse />
-        </template>
       </UDashboardNavbar>
     </template>
 

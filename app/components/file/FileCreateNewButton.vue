@@ -34,11 +34,11 @@ const dropdownMenuItems = ref<DropdownMenuItem[]>([
     :ui="{ content: 'w-(--reka-dropdown-menu-trigger-width)' }"
   >
     <UButton
-      variant="soft"
+      variant="subtle"
       icon="i-lucide-plus"
       :label="collapsed ? undefined :'New'"
       size="xl"
-      class="w-60"
+      block
     />
   </UDropdownMenu>
 </template>

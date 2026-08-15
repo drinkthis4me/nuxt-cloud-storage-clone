@@ -83,11 +83,13 @@ const links = [
             footer: 'lg:border-t lg:border-default',
           }"
         >
-          <template #header="{ collapsed }">
-            <FileCreateNewButton :collapsed />
+          <template #header>
+            <UDashboardSidebarCollapse />
           </template>
 
           <template #default="{ collapsed }">
+            <FileCreateNewButton :collapsed />
+
             <UNavigationMenu
               :collapsed="collapsed"
               :items="links[0]"
