@@ -326,12 +326,12 @@ export function useUploadFile() {
     }
   }
 
-  async function promptAndUploadFile() {
+  async function promptAndUploadFile(parentFolderId: string | null = null) {
     const file = await openDialog()
 
     if (!file) return
 
-    upload(file)
+    upload(file, parentFolderId)
   }
 
   return {

@@ -5,15 +5,23 @@ defineProps<{
   collapsed: boolean
 }>()
 
+const route = useRoute()
 const { promptAndCreateFolder } = useCreateFolder()
 const { promptAndUploadFile } = useUploadFile()
+
+function getParentFolderId(): string | null {
+  // '/app/folders/:folderId'
+  const folderId = route.params.folderId
+  return typeof folderId === 'string' ? folderId : null
+}
 
 const dropdownMenuItems = ref<DropdownMenuItem[]>([
   {
     label: 'New folder',
     icon: 'i-lucide-folder',
     onSelect() {
-      promptAndCreateFolder()
+      const parentFolderId = getParentFolderId()
+      promptAndCreateFolder(parentFolderId)
     },
     class: 'cursor-pointer',
   },
@@ -21,7 +29,8 @@ const dropdownMenuItems = ref<DropdownMenuItem[]>([
     label: 'New File',
     icon: 'i-lucide-file',
     onSelect() {
-      promptAndUploadFile()
+      const parentFolderId = getParentFolderId()
+      promptAndUploadFile(parentFolderId)
     },
     class: 'cursor-pointer',
   },

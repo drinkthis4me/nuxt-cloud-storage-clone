@@ -20,12 +20,13 @@ export function useCreateFolder() {
     try {
       const validBody = folderSchema.parse(body)
 
-      const res = await $fetch<CreateFolderResponse>('/api/files', {
+      const { file } = await $fetch<CreateFolderResponse>('/api/files', {
         method: 'POST',
         body: validBody,
       })
 
-      console.log(res)
+      const folderKey = getFolderKey(file.parentFolderId)
+      await refreshNuxtData(folderKey)
     }
     catch (err) {
       console.log(err)
