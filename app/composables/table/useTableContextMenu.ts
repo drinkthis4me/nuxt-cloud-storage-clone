@@ -3,7 +3,7 @@ import type { ContextMenuItem, TableRow } from '@nuxt/ui'
 import type { SerializedFile } from '~~/shared/types/response/files'
 
 interface useTableContextMenuOption {
-  table?: 'default' | 'trash-bin' | 'recent'
+  table?: 'default' | 'trash-bin' | 'recent' | 'shared-by-me' | 'shared-with-me'
   rowSelection?: Ref<Record<string, boolean>>
   onRenamed?: (file: SerializedFile) => void
   onSoftDeleted?: (ids: SerializedFile['id'][]) => void
@@ -25,13 +25,15 @@ export function useTableContextMenu(options: useTableContextMenuOption = {}) {
     onMoved,
   } = options
 
-  const contextMenuItems = ref<ContextMenuItem[]>([])
+  const contextMenuItems = shallowRef<ContextMenuItem[]>([])
 
   const { download } = useDownloadFile()
   const { promptAndRename } = useRenameFile()
   const { promptAndMove } = useMoveFile()
   const { softDelete, hardDelete } = useDeleteFile()
   const { restore } = useRestoreFile()
+  const { openDialog: openShareDialog } = useShareLink()
+  const { openDialog: openManageAccessDialog } = useManageAccess()
 
   function resolveTargetRows(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]) {
     if (rowSelection === null) {
@@ -75,6 +77,28 @@ export function useTableContextMenu(options: useTableContextMenuOption = {}) {
       },
     }
 
+    const shareButton = {
+      label: 'Share',
+      icon: 'i-lucide-file-output',
+      onSelect() {
+        openShareDialog({
+          fileId: row.original.id,
+          fileName: row.original.name,
+        })
+      },
+    }
+
+    const manageAccessButton = {
+      label: 'Manage access',
+      icon: 'i-lucide-user-plus',
+      onSelect() {
+        openManageAccessDialog({
+          fileId: row.original.id,
+          fileName: row.original.name,
+        })
+      },
+    }
+
     const items = [
       // Only supports download single file, not folders (for now)
       ...(anyFolder ? [] : [downloadButton]),
@@ -96,13 +120,9 @@ export function useTableContextMenu(options: useTableContextMenuOption = {}) {
       {
         type: 'separator' as const,
       },
-      {
-        label: 'Share',
-        icon: 'i-lucide-user-plus',
-        onSelect() {
-        },
-      },
       ...(isMulti ? [] : [{ label: 'Info', icon: 'i-lucide-info' }]),
+      ...(isMulti ? [] : [shareButton]),
+      ...(isMulti ? [] : [manageAccessButton]),
       {
         type: 'separator' as const,
       },
@@ -224,6 +244,58 @@ export function useTableContextMenu(options: useTableContextMenuOption = {}) {
     return items
   }
 
+  function getSharedByMeItems(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] {
+    const targets = resolveTargetRows(row, allRows)
+
+    const items = [
+      {
+        label: 'Share',
+        icon: 'i-lucide-user-plus',
+        onSelect() {
+          openShareDialog({
+            fileId: row.original.id,
+            fileName: row.original.name,
+          })
+        },
+      },
+      {
+        label: 'Manage access',
+        icon: 'i-lucide-user-plus',
+        onSelect() {
+          openManageAccessDialog({
+            fileId: row.original.id,
+            fileName: row.original.name,
+          })
+        },
+      },
+      {
+        label: 'Download',
+        icon: 'i-lucide-download',
+        async onSelect() {
+          await Promise.all(targets.map(t => download(t.id)))
+        },
+      },
+    ] satisfies ContextMenuItem[]
+
+    return items
+  }
+
+  function getSharedWithMeItems(row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): ContextMenuItem[] {
+    const targets = resolveTargetRows(row, allRows)
+
+    const items = [
+      {
+        label: 'Download',
+        icon: 'i-lucide-download',
+        async onSelect() {
+          await Promise.all(targets.map(t => download(t.id)))
+        },
+      },
+    ] satisfies ContextMenuItem[]
+
+    return items
+  }
+
   function onContextMenu(_e: Event, row: TableRow<SerializedFile>, allRows: TableRow<SerializedFile>[]): void {
     switch (table) {
       case 'trash-bin': {
@@ -232,6 +304,14 @@ export function useTableContextMenu(options: useTableContextMenuOption = {}) {
       }
       case 'recent': {
         contextMenuItems.value = getRecentRowItems(row, allRows)
+        break
+      }
+      case 'shared-by-me': {
+        contextMenuItems.value = getSharedByMeItems(row, allRows)
+        break
+      }
+      case 'shared-with-me': {
+        contextMenuItems.value = getSharedWithMeItems(row, allRows)
         break
       }
       default: {

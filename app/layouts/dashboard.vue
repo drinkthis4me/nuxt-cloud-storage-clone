@@ -17,15 +17,20 @@ const links = [
       icon: 'i-lucide-folder',
       to: '/app/folders',
     },
+    // {
+    //   label: 'Favorite',
+    //   icon: 'i-lucide-star',
+    //   to: '/app/favorite',
+    // },
     {
-      label: 'Favorite',
-      icon: 'i-lucide-star',
-      // to: '/app/favorite',
+      label: 'Shared By Me',
+      icon: 'i-lucide-link',
+      to: '/app/shared-by-me',
     },
     {
-      label: 'Shared',
-      icon: 'i-lucide-link',
-      // to: '/app/share',
+      label: 'Shared with Me',
+      icon: 'i-lucide-user-plus',
+      to: '/app/shared-with-me',
     },
     {
       label: 'Upload Progress',
@@ -49,7 +54,6 @@ const links = [
     {
       label: 'Settings',
       icon: 'i-lucide-settings',
-      to: '/app',
       onSelect: () => {
         sidebarCollapsed.value = true
       },

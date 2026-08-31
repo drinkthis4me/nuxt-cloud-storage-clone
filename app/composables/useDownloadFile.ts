@@ -5,7 +5,6 @@ import type { DownloadUrlResponse } from '#shared/types/response/files'
 export function useDownloadFile() {
   const toast = useToast()
 
-  // TODO: show download progress
   // TODO: decompress file
   async function download(fileId: string) {
     try {
@@ -25,10 +24,12 @@ export function useDownloadFile() {
     }
     catch (err) {
       console.log(err)
+
+      const msg = getErrorMessage(err)
       toast.add({
         color: 'error',
-        title: 'Error',
-        description: 'Download failed. Pleases try again.',
+        title: 'Download failed',
+        description: msg,
       })
     }
   }

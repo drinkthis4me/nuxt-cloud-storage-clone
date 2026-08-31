@@ -7,9 +7,9 @@ import { Prisma } from '@@/prisma/generated/client'
 export default defineEventHandler(async (event) => {
   const body = await validateRequest(event, readValidatedBody, userCreateSchema)
 
-  try {
-    const prismaClient = usePrismaClient()
+  const prismaClient = usePrismaClient()
 
+  try {
     const hashedPassword = await hashPassword(body.password)
 
     const user = await prismaClient.user.create({
@@ -19,6 +19,18 @@ export default defineEventHandler(async (event) => {
         name: body.name ?? null,
       },
       select: { id: true, email: true, name: true },
+    })
+
+    // Link file share (by other user) to this new account
+    // (See: /server/api/files/[id]/shares/index.post.ts)
+    await prismaClient.share.updateMany({
+      where: {
+        inviteEmail: body.email,
+        userId: null,
+      },
+      data: {
+        userId: user.id,
+      },
     })
 
     await setUserSession(event, {

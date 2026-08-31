@@ -5,9 +5,9 @@ import { validateRequest } from '#server/utils/validateRequest'
 import { fileListSchema, fileScope, fileStatus } from '#shared/schemas/file'
 
 import type { File } from '~~/prisma/generated/client'
-import type { FileStatusEnum } from '#shared/types/response/files'
+import type { FileStatusEnum, FileListResponse } from '#shared/types/response/files'
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<FileListResponse> => {
   const { user } = await requireUserSession(event)
   const query = await validateRequest(event, getValidatedQuery, fileListSchema)
 
@@ -39,6 +39,7 @@ export default defineEventHandler(async (event) => {
       const shares = await prismaClient.share.findMany({
         where: { userId: user.id },
         include: { file: true },
+        orderBy: [{ createdAt: 'desc' }],
       })
 
       files = shares

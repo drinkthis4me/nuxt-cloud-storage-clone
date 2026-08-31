@@ -14,6 +14,7 @@ const {
   files,
   isPending,
   isFirstPending,
+  error: folderContentError,
   refresh,
   patchFile,
 } = useFolderContents(folderId)
@@ -51,13 +52,17 @@ watch(error, (val) => {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1>My files</h1>
+          <h1 class="capitalize">
+            My files
+          </h1>
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
       <HeroLoading v-if="isPending && isFirstPending" />
+
+      <HeroError v-else-if="folderContentError" />
 
       <HeroEmpty v-else-if="noFileEntry" />
 

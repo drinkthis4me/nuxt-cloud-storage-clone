@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/consistent-type-imports */
-import { fileStatus } from '~~/shared/schemas/file'
+import { fileStatus } from '~~/shared/const/file'
 import { uploadStrategy } from '~~/shared/const/uploadStrategy'
 
 export type FileStatusEnum = (typeof fileStatus)[keyof typeof fileStatus]

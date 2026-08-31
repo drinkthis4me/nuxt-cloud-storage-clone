@@ -25,7 +25,7 @@ const { promptAndUploadFile } = useUploadFile()
           label="Upload now"
           size="xl"
           class="capitalize"
-          @click="promptAndUploadFile"
+          @click="promptAndUploadFile()"
         />
       </slot>
     </div>

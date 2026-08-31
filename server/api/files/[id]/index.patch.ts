@@ -1,7 +1,8 @@
 import { usePrismaClient } from '#server/utils/prisma'
 import { HTTP_STATUS } from '#server/utils/httpStatus'
 import { serializeFile } from '#server/utils/serializeFile'
-import { fileIdSchema, editFileSchema, sharePermission } from '#shared/schemas/file'
+import { fileIdSchema, editFileSchema } from '#shared/schemas/file'
+import { sharePermission } from '#shared/schemas/shareLink'
 
 import type { PrismaClient, File } from '~~/prisma/generated/client'
 import type { FileResponse } from '#shared/types/response/files'

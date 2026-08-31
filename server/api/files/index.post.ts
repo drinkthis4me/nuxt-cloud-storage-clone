@@ -8,7 +8,8 @@ import { fileSchema, folderSchema } from '#shared/schemas/file'
 import { PutObjectCommand } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { z } from 'zod'
-import { fileStatus, sharePermission } from '~~/shared/schemas/file'
+import { fileStatus } from '~~/shared/schemas/file'
+import { sharePermission } from '~~/shared/schemas/shareLink'
 import { uploadStrategy } from '~~/shared/const/uploadStrategy'
 
 import type {

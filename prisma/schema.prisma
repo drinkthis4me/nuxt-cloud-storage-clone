@@ -21,8 +21,9 @@ model User {
   createdAt DateTime @default(now())
   isActive  Boolean  @default(true)
 
-  files  File[]
-  shares Share[]
+  files      File[]
+  shares     Share[]
+  shareLinks ShareLink[] @relation("CreatedShareLinks")
 
   @@index([email])
 }
@@ -49,6 +50,7 @@ model File {
 
   fileChunks FileChunk[]
   shares     Share[]
+  shareLinks ShareLink[]
 
   @@index([fingerprint])
   @@index([ownerId])
@@ -80,15 +82,34 @@ enum ChunkStatus {
 }
 
 model Share {
-  userId     Int
-  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fileId     String
-  file       File            @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  permission SharePermission @default(VIEW)
-  createdAt  DateTime        @default(now())
-  updatedAt  DateTime        @updatedAt
+  id          String          @id
+  fileId      String
+  file        File            @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  userId      Int?
+  user        User?           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  inviteEmail String
+  permission  SharePermission @default(VIEW)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
 
-  @@id(fields: [userId, fileId])
+  @@unique([fileId, inviteEmail])
+  @@index([userId])
+}
+
+model ShareLink {
+  id           String          @id
+  token        String          @unique
+  fileId       String
+  file         File            @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  createdBy    Int
+  creator      User            @relation("CreatedShareLinks", fields: [createdBy], references: [id], onDelete: Cascade)
+  permission   SharePermission @default(VIEW)
+  passwordHash String?
+  expiresAt    DateTime?
+  revokedAt    DateTime?
+  createdAt    DateTime        @default(now())
+
+  @@index([fileId])
 }
 
 enum SharePermission {

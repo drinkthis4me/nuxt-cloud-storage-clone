@@ -6,9 +6,9 @@ import type { ZodType } from 'zod'
 
 type ValidateFn = typeof getValidatedRouterParams | typeof readValidatedBody | typeof getValidatedQuery
 
-export const validateRequest = async <
+export async function validateRequest<
   T extends ZodType,
-> (event: H3Event, validateFn: ValidateFn, schema: T): Promise<z.infer<T>> => {
+>(event: H3Event, validateFn: ValidateFn, schema: T): Promise<z.infer<T>> {
   const parsed = await validateFn(event, params => schema.safeParse(params))
 
   if (!parsed.success) {

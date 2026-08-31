@@ -23,13 +23,14 @@ export default defineNuxtConfig({
     databaseUrl: process.env.DATABASE_URL,
 
     public: {
-      appUrl: 'http://localhost:3000', // can be overridden by NUXT_PUBLIC_API_BASE environment variable
+      appUrl: 'http://localhost:3000',
     },
   },
 
   routeRules: {
     'app/': { ssr: false },
     'app/**': { ssr: false },
+    'share/**': { ssr: false },
   },
 
   compatibilityDate: '2025-07-15',

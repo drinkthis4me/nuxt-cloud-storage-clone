@@ -1,21 +1,7 @@
 import { z } from 'zod'
+import { fileStatus, fileScope } from '../const/file'
 
-export const fileStatus = {
-  UPLOADING: 'UPLOADING',
-  UPLOADED: 'UPLOADED',
-  DELETED: 'DELETED',
-} as const
-
-export const fileScope = {
-  MINE: 'MINE',
-  SHARED: 'SHARED',
-  ALL: 'ALL',
-} as const
-
-export const sharePermission = {
-  VIEW: 'VIEW',
-  EDIT: 'EDIT',
-} as const
+export { fileStatus, fileScope }
 
 const id = z.uuid({ version: 'v4' })
 export const name = z.string().trim().min(1, 'Required').max(255, 'Too long. Max length: 255 characters.')

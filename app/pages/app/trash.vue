@@ -10,6 +10,7 @@ const {
   files,
   isPending,
   isFirstPending,
+  error,
   refresh,
   patchFile,
 } = useTrashBinContents()
@@ -27,7 +28,7 @@ function handleFileDeleted(fileIds: string[]) {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1 class="text-base">
+          <h1 class="capitalize">
             Trash bin
           </h1>
         </template>
@@ -36,6 +37,8 @@ function handleFileDeleted(fileIds: string[]) {
 
     <template #body>
       <HeroLoading v-if="isFirstPending" />
+
+      <HeroError v-else-if="error" />
 
       <HeroEmpty
         v-else-if="files.length === 0"

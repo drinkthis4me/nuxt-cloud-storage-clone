@@ -2,7 +2,7 @@ import { fileScope } from '#shared/schemas/file'
 
 import type { SerializedFile, FileListResponse } from '#shared/types/response/files'
 
-export const useFolderContents = (folderId: MaybeRefOrGetter<string | null>) => {
+export function useFolderContents(folderId: MaybeRefOrGetter<string | null>) {
   const parentFolderId = computed(() => toValue(folderId))
   const query = computed(() => ({
     ...(parentFolderId.value ? { parentFolderId: parentFolderId.value } : {}),
