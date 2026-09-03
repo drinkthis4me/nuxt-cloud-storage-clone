@@ -16,7 +16,7 @@ const authStore = useAuthStore()
     :block
     to="/signup"
   >
-    Get <span class="font-bold font-serif">FolderSpace</span>
+    <span class="flex items-center text-nowrap">Get started</span>
   </UButton>
   <UButton
     v-else
@@ -25,6 +25,6 @@ const authStore = useAuthStore()
     :block
     to="/app"
   >
-    To <span class="font-bold font-serif">FolderSpace</span>
+    Dashboard
   </UButton>
 </template>

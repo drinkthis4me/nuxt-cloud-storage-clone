@@ -12,6 +12,12 @@ export default defineNuxtConfig({
 
   css: ['~/assets/css/main.css'],
 
+  router: {
+    options: {
+      scrollBehaviorType: 'smooth',
+    },
+  },
+
   runtimeConfig: {
     minio: {
       accessKey: process.env.MINIO_ACCESS_KEY,
