@@ -126,16 +126,8 @@ const {
 
 const {
   contextMenuItems,
-  onContextMenu: onContextMenuBase,
-} = useTableContextMenu({
-  table: 'shared-by-me',
-})
-
-function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
-  const tableApi = table.value?.tableApi
-  const allRows = tableApi?.getRowModel().rows ?? [row]
-  onContextMenuBase(e, row, allRows)
-}
+  onContextMenu,
+} = useShareLinkTableContextMenu(token)
 </script>
 
 <template>

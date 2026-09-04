@@ -73,7 +73,7 @@ watch(error, (val) => {
           class="px-2"
         />
 
-        <FileTable
+        <TableMyFiles
           :files
           :loading="isPending"
           class="flex-1"

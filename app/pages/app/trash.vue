@@ -47,7 +47,7 @@ function handleFileDeleted(fileIds: string[]) {
         hide-button
       />
 
-      <FileTrashTable
+      <TableTrashBin
         v-else
         :files
         :loading="isPending"

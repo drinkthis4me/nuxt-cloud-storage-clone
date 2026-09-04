@@ -134,8 +134,9 @@ const {
 
 const {
   contextMenuItems,
-  onContextMenu: onContextMenuBase,
-} = useTableContextMenu({
+  onContextMenu,
+} = useMyFileTableContextMenu({
+  tableRef: table,
   rowSelection,
   onRenamed: file => emit('file-updated', file),
   onSoftDeleted: ids => emit('file-deleted', ids),
@@ -144,12 +145,6 @@ const {
   },
   onMoved: () => emit('refresh'),
 })
-
-function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
-  const tableApi = table.value?.tableApi
-  const allRows = tableApi?.getRowModel().rows ?? [row]
-  onContextMenuBase(e, row, allRows)
-}
 
 const { moveFiles } = useMoveFile()
 async function onMoveFiles(fileIds: string[], targetFolderId: string) {

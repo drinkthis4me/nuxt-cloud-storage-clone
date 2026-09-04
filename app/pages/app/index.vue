@@ -37,7 +37,7 @@ function handleFileDeleted(ids: string[]) {
 
       <HeroError v-else-if="error" />
 
-      <FileRecentTable
+      <TableRecentFile
         v-else
         :files
         :loading="isPending"

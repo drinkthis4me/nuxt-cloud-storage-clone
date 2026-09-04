@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { TableColumn } from '@nuxt/ui'
 import type { SerializedFile } from '~~/shared/types/response/files'
 import type { UTableInstance } from '~/types/UTableInstance'
 </script>
@@ -103,22 +103,16 @@ const {
 
 const {
   contextMenuItems,
-  onContextMenu: onContextMenuBase,
-} = useTableContextMenu({
-  table: 'trash-bin',
+  onContextMenu,
+} = useTrashBinTableContextMenu({
+  tableRef: table,
   rowSelection,
-  onRestored: ids => emit('file-deleted', ids),
   onHardDeleted: ids => emit('file-deleted', ids),
+  onRestored: ids => emit('file-deleted', ids),
   onSelectionReplaced: (rowId) => {
     rowSelection.value = { [rowId]: true }
   },
 })
-
-function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
-  const tableApi = table.value?.tableApi
-  const allRows = tableApi?.getRowModel().rows ?? [row]
-  onContextMenuBase(e, row, allRows)
-}
 </script>
 
 <template>

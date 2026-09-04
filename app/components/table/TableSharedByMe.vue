@@ -1,7 +1,6 @@
 <script lang="ts">
-import type { TableColumn, TableRow } from '@nuxt/ui'
+import type { TableColumn } from '@nuxt/ui'
 import type { SerializedFile } from '#shared/types/response/files'
-import type { UTableInstance } from '~/types/UTableInstance'
 </script>
 
 <script setup lang="ts">
@@ -9,7 +8,7 @@ import { Icon, UTable } from '#components'
 import { getFileIcon } from '~~/app/utils/getFileIcon'
 import { isoToLocalDateTime } from '~~/app/utils/date'
 import { formatFileSize } from '~~/app/utils/fileSize'
-import { h, useTemplateRef } from 'vue'
+import { h } from 'vue'
 
 const {
   files = [],
@@ -64,20 +63,10 @@ const columns: TableColumn<SerializedFile>[] = [
   },
 ]
 
-const table = useTemplateRef<UTableInstance<SerializedFile>>('table')
-
 const {
   contextMenuItems,
-  onContextMenu: onContextMenuBase,
-} = useTableContextMenu({
-  table: 'shared-by-me',
-})
-
-function onContextMenu(e: Event, row: TableRow<SerializedFile>) {
-  const tableApi = table.value?.tableApi
-  const allRows = tableApi?.getRowModel().rows ?? [row]
-  onContextMenuBase(e, row, allRows)
-}
+  onContextMenu,
+} = useSharedByMeTableContextMenu()
 </script>
 
 <template>

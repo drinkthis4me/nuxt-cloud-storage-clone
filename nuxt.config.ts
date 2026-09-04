@@ -8,6 +8,12 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
   ],
 
+  imports: {
+    dirs: [
+      '~/composables/**',
+    ],
+  },
+
   devtools: { enabled: true },
 
   css: ['~/assets/css/main.css'],
