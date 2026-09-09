@@ -17,9 +17,9 @@ const {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1 class="text-base capitalize">
+          <div class="text-base capitalize">
             Shared by me
-          </h1>
+          </div>
         </template>
       </UDashboardNavbar>
     </template>
@@ -31,12 +31,17 @@ const {
 
       <HeroEmpty v-else-if="files.length === 0" />
 
-      <TableSharedByMe
-        v-else
-        :files
-        :loading="isRefreshing"
-        class="flex-1"
-      />
+      <ClientOnly v-else>
+        <TableSharedByMe
+
+          :files
+          :loading="isRefreshing"
+          class="flex-1"
+        />
+        <template #fallback>
+          <TableSkeleton />
+        </template>
+      </ClientOnly>
     </template>
   </UDashboardPanel>
 </template>

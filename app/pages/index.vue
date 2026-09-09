@@ -357,7 +357,7 @@ const plans = [
       </div>
     </section>
 
-    <!-- Pricings -->
+    <!-- Pricing -->
     <section
       id="pricing"
       class="py-24 lg:py-32"

@@ -12,8 +12,8 @@ const folderId = computed(() => (route.params.folderId as string) || null)
 
 const {
   files,
-  isPending,
-  isFirstPending,
+  isFirstLoading,
+  isRefreshing,
   error: folderContentError,
   refresh,
   patchFile,
@@ -22,7 +22,6 @@ const {
 const {
   breadcrumbs,
   isPending: isBreadcrumbsPending,
-  // isFirstPending: isBreadcrumbsFirstPending,
   error,
 } = useBreadcrumbs(folderId)
 
@@ -52,35 +51,45 @@ watch(error, (val) => {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1 class="capitalize">
+          <div class="text-base capitalize">
             My files
-          </h1>
+          </div>
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <HeroLoading v-if="isPending && isFirstPending" />
+      <HeroLoading v-if="isFirstLoading" />
 
       <HeroError v-else-if="folderContentError" />
 
       <HeroEmpty v-else-if="noFileEntry" />
 
       <template v-else>
-        <FileBreadcrumb
-          :breadcrumbs
-          :is-refreshing="isBreadcrumbsPending"
-          class="px-2"
-        />
+        <ClientOnly>
+          <FileBreadcrumb
+            :breadcrumbs
+            :is-refreshing="isBreadcrumbsPending"
+            class="px-2"
+          />
+          <template #fallback>
+            <FileBreadcrumbSkeleton />
+          </template>
+        </ClientOnly>
 
-        <TableMyFiles
-          :files
-          :loading="isPending"
-          class="flex-1"
-          @refresh="refresh"
-          @file-updated="handleFileUpdated"
-          @file-deleted="handleFileDeleted"
-        />
+        <ClientOnly>
+          <TableMyFiles
+            :files
+            :loading="isRefreshing"
+            class="flex-1"
+            @refresh="refresh"
+            @file-updated="handleFileUpdated"
+            @file-deleted="handleFileDeleted"
+          />
+          <template #fallback>
+            <TableSkeleton />
+          </template>
+        </ClientOnly>
       </template>
     </template>
   </UDashboardPanel>

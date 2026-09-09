@@ -7,7 +7,9 @@ export function useSharedByMe() {
     pending,
     error,
     refresh,
-  } = useFetch<SharedByMeResponse>('/api/files/shared-by-me')
+  } = useFetch<SharedByMeResponse>('/api/files/shared-by-me', {
+    lazy: true,
+  })
 
   const isFirstLoading = computed(() => pending.value && !data.value)
   const isRefreshing = computed(() => pending.value && !data.value)

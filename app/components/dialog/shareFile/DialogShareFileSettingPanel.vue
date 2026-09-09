@@ -38,7 +38,7 @@ async function onSubmit(e: FormSubmitEvent<ShareLinkSchema>) {
   emit('close', e.data)
 }
 
-const formRef = useTemplateRef('form')
+const formRef = useTemplateRef('formEl')
 </script>
 
 <template>
@@ -62,7 +62,7 @@ const formRef = useTemplateRef('form')
 
     <template #body>
       <UForm
-        ref="form"
+        ref="formEl"
         :schema="shareLinkSchema"
         :state="state"
         class="flex flex-col space-y-4"

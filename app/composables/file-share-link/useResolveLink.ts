@@ -5,7 +5,7 @@ interface CustomQuery {
   folder?: LocationQueryValue | string
 }
 
-export function useResolveLink(
+export async function useResolveLink(
   token: MaybeRefOrGetter<string>,
   customQuery?: MaybeRefOrGetter<CustomQuery>,
 ) {

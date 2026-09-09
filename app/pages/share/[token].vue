@@ -26,7 +26,7 @@ const {
   refresh,
   isFirstLoading,
   isRefreshing,
-} = useResolveLink(token)
+} = await useResolveLink(token)
 
 const queryFolder = computed(() => {
   const q = route.query.folder
@@ -59,21 +59,36 @@ const {
           v-if="data.file.isFolder && data.children"
           class="flex flex-col gap-4"
         >
-          <ShareLinkBreadcrumb :breadcrumbs />
-          <TableShareLinkContents
-            :permission="data.permission"
-            :files="data.children"
-            :loading="isRefreshing"
-            :token
-          />
+          <ClientOnly>
+            <ShareLinkBreadcrumb :breadcrumbs />
+            <template #fallback>
+              <FileBreadcrumbSkeleton />
+            </template>
+          </ClientOnly>
+          <ClientOnly>
+            <TableShareLinkContents
+              :permission="data.permission"
+              :files="data.children"
+              :loading="isRefreshing"
+              :token
+            />
+            <template #fallback>
+              <TableSkeleton />
+            </template>
+          </ClientOnly>
         </div>
 
-        <FileDetail
-          v-else
-          :permission="data.permission"
-          :file="data.file"
-          :token
-        />
+        <ClientOnly v-else>
+          <FileDetail
+            :permission="data.permission"
+            :file="data.file"
+            :token
+          />
+
+          <template #fallback>
+            <FileDetailSkeketon />
+          </template>
+        </ClientOnly>
       </template>
     </UContainer>
   </div>

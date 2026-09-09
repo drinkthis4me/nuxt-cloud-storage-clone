@@ -14,14 +14,14 @@ const emit = defineEmits<{
   close: [value: string | null]
 }>()
 
-const formRef = useTemplateRef('form')
+const formRef = useTemplateRef('formEl')
 
 const schema = z.object({
   name: nameSchema,
 })
 type Schema = z.output<typeof schema>
 
-const form = reactive<Schema>({
+const state = reactive<Schema>({
   name: props.name,
 })
 
@@ -41,16 +41,16 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
   >
     <template #body>
       <UForm
-        ref="form"
+        ref="formEl"
         :schema="schema"
-        :state="form"
+        :state="state"
         class=""
         @submit.prevent="onSubmit"
       >
         <UFormField name="file-name">
           <UInput
             id="file-name"
-            v-model.trim="form.name"
+            v-model.trim="state.name"
             size="2xl"
             autofocus
             class="w-full"

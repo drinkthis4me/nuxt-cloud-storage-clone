@@ -6,6 +6,9 @@
 
     <ClientOnly>
       <UColorModeSelect size="lg" />
+      <template #fallback>
+        <div class="h-10 w-32 animate-pulse bg-gray-200 dark:bg-gray-800 rounded-md" />
+      </template>
     </ClientOnly>
   </header>
 </template>

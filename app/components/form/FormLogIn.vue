@@ -23,7 +23,7 @@ async function onSubmit(e: FormSubmitEvent<UserLoginSchema>) {
       Sign in
     </h1>
     <div class="py-4">
-      New to FolderSapce?
+      New to FolderSpace?
       <NuxtLink
         to="/signup"
         class="ml-2 text-primary"

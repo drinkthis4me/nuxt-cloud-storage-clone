@@ -19,8 +19,8 @@ export function useResolveLinkBreadcrumbs(
     refresh,
   } = useFetch<ShareLinkBreadcrumbsResponse>(() => `/api/share/${tokenValue.value}/breadcrumbs`, {
     query,
-    lazy: true,
     watch: [query],
+    lazy: true,
   })
 
   const isFirstLoading = computed(() => pending.value && !data.value)

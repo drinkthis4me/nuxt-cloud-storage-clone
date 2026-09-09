@@ -17,6 +17,8 @@ function openSlideover() {
   isSlideoverOpen.value = true
 }
 
+const isMounted = useMounted()
+
 const fileInfo = computed(() => [
   {
     label: 'Name',
@@ -37,11 +39,11 @@ const fileInfo = computed(() => [
   },
   {
     label: 'Created at',
-    value: isoToLocalDateTime(file.createdAt),
+    value: isMounted ? isoToLocalDateTime(file.createdAt) : file.createdAt,
   },
   {
     label: 'Last updated at',
-    value: isoToLocalDateTime(file.updatedAt),
+    value: isMounted ? isoToLocalDateTime(file.updatedAt) : file.updatedAt,
   },
 ])
 
@@ -82,7 +84,12 @@ const { download } = useShareLinkDownload(token)
                 </UTooltip>
               </span>
             </div>
-            <div>{{ info.value }}</div>
+            <ClientOnly>
+              <div>{{ info.value }}</div>
+              <template #fallback>
+                <div>{{ file.createdAt }}</div>
+              </template>
+            </ClientOnly>
           </div>
         </div>
       </template>
@@ -106,17 +113,17 @@ const { download } = useShareLinkDownload(token)
       </div>
 
       <div class="flex justify-center">
-        <Icon
-          :name="iconName"
-          size="12em"
-        />
+        <div class="w-[12em] h-[12em]">
+          <Icon
+            :name="iconName"
+            size="12em"
+          />
+        </div>
       </div>
 
-      <div class="">
-        <p class="text-center">
-          {{ file.name }}
-        </p>
-      </div>
+      <p class="text-center">
+        {{ file.name }}
+      </p>
 
       <div>
         <UButton

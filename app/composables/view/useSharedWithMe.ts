@@ -14,6 +14,7 @@ export function useSharedWithMe() {
     query: {
       scope: fileScope.SHARED,
     },
+    lazy: true,
   })
 
   const isFirstLoading = computed(() => pending.value && !data.value)

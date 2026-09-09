@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-xl font-bold font-serif">
+  <div class="text-xl font-bold font-serif">
     FolderSpace
-  </h1>
+  </div>
 </template>

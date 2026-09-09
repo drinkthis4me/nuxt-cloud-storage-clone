@@ -10,9 +10,9 @@ const emit = defineEmits<{
   close: [value: string | null]
 }>()
 
-const formRef = useTemplateRef('form')
+const formRef = useTemplateRef('formEl')
 
-const form = reactive<Partial<FolderSchema>>({
+const state = reactive<Partial<FolderSchema>>({
   name: 'Unnamed New Folder',
   isFolder: true,
   parentFolderId: null,
@@ -34,16 +34,16 @@ function onSubmit(e: FormSubmitEvent<FolderSchema>) {
   >
     <template #body>
       <UForm
-        ref="form"
+        ref="formEl"
         :schema="folderSchema"
-        :state="form"
+        :state="state"
         class=""
         @submit.prevent="onSubmit"
       >
         <UFormField name="file-name">
           <UInput
             id="file-name"
-            v-model.trim="form.name"
+            v-model.trim="state.name"
             size="2xl"
             autofocus
             class="w-full"

@@ -9,7 +9,7 @@ const emit = defineEmits<{
   close: [value: File | null]
 }>()
 
-const formRef = useTemplateRef('form')
+const formRef = useTemplateRef('formEl')
 
 const schema = z.object({
   file: z.file('Required. Please select or drag a file.'),
@@ -17,7 +17,7 @@ const schema = z.object({
 
 type Schema = z.output<typeof schema>
 
-const form = reactive<Partial<Schema>>({
+const state = reactive<Partial<Schema>>({
   file: undefined,
 })
 
@@ -38,9 +38,9 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
   >
     <template #body>
       <UForm
-        ref="form"
+        ref="formEl"
         :schema="schema"
-        :state="form"
+        :state="state"
         class="flex justify-center"
         @submit.prevent="onSubmit"
       >
@@ -48,12 +48,12 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
           <UFormField name="file-upload">
             <UFileUpload
               id="file-upload"
-              v-model="form.file"
+              v-model="state.file"
               :multiple="false"
               size="xl"
               description=" (max. 500MB)"
               class="w-48 md:w-96 min-h-48 "
-              :class="{ 'cursor-pointer': !form.file }"
+              :class="{ 'cursor-pointer': !state.file }"
             >
               <template #label>
                 <div class="">
@@ -65,10 +65,10 @@ function onSubmit(e: FormSubmitEvent<Schema>) {
           </UFormField>
 
           <div
-            v-if="form.file"
+            v-if="state.file"
             class="text-center text-balance break-all"
           >
-            {{ form.file.name }}
+            {{ state.file.name }}
           </div>
         </div>
 

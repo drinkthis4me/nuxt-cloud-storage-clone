@@ -8,8 +8,8 @@ definePageMeta({
 
 const {
   files,
-  isPending,
-  isFirstPending,
+  isFirstLoading,
+  isRefreshing,
   error,
   refresh,
   patchFile,
@@ -28,15 +28,15 @@ function handleFileDeleted(fileIds: string[]) {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1 class="capitalize">
+          <div class="text-base capitalize">
             Trash bin
-          </h1>
+          </div>
         </template>
       </UDashboardNavbar>
     </template>
 
     <template #body>
-      <HeroLoading v-if="isFirstPending" />
+      <HeroLoading v-if="isFirstLoading" />
 
       <HeroError v-else-if="error" />
 
@@ -47,14 +47,18 @@ function handleFileDeleted(fileIds: string[]) {
         hide-button
       />
 
-      <TableTrashBin
-        v-else
-        :files
-        :loading="isPending"
-        @refresh="refresh"
-        @file-updated="handleFileUpdated"
-        @file-deleted="handleFileDeleted"
-      />
+      <ClientOnly v-else>
+        <TableTrashBin
+          :files
+          :loading="isRefreshing"
+          @refresh="refresh"
+          @file-updated="handleFileUpdated"
+          @file-deleted="handleFileDeleted"
+        />
+        <template #fallback>
+          <TableSkeleton />
+        </template>
+      </ClientOnly>
     </template>
   </UDashboardPanel>
 </template>

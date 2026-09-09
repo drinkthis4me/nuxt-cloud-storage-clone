@@ -38,6 +38,7 @@ export function useTableSelection<T>(option: UseTableSelectionOption<T>) {
       return
     }
 
+    // TODO: SSR safety
     clickTimeout = setTimeout(() => {
       if (!doubleClickOnly) {
         if (mouseEvent.shiftKey && lastSelectedRowId.value) {

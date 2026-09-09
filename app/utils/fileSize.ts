@@ -1,11 +1,12 @@
-export function formatFileSize(fileSizeStr: string): string {
-  let res = ''
+export function formatFileSize(fileSizeStr: string | null): string {
+  if (!fileSizeStr) return 'N/A'
 
   try {
     const bytes = parseFloat(fileSizeStr)
 
     if (isNaN(bytes) || bytes < 0) {
-      throw new Error('Invalid file size provided')
+      console.log('Invalid file size provided')
+      return fileSizeStr
     }
 
     if (bytes === 0) {
@@ -19,11 +20,10 @@ export function formatFileSize(fileSizeStr: string): string {
 
     const formattedSize = Number.isInteger(val) ? val.toString() : val.toFixed(2)
 
-    res = `${formattedSize} ${units[i]}`
+    return `${formattedSize} ${units[i]}`
   }
   catch (err) {
     console.log(err)
+    return fileSizeStr
   }
-
-  return res
 }

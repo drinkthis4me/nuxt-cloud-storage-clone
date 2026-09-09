@@ -102,7 +102,23 @@ const links = [
               popover
             />
 
-            <StorageUsage v-show="!collapsed" />
+            <ClientOnly>
+              <StorageUsage v-show="!collapsed" />
+              <template #fallback>
+                <div class="p-4">
+                  <UProgress />
+                  <div class="mt-2 flex justify-end items-center gap-1 text-muted">
+                    <Icon
+                      name="i-lucide-cloud"
+                      size="15px"
+                    />
+                    <p class="text-end text-xs">
+                      Loading...
+                    </p>
+                  </div>
+                </div>
+              </template>
+            </ClientOnly>
 
             <UNavigationMenu
               :collapsed="collapsed"

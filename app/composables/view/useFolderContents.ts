@@ -19,15 +19,11 @@ export function useFolderContents(folderId: MaybeRefOrGetter<string | null>) {
     key: computed(() => getFolderKey(parentFolderId)),
     query,
     watch: [parentFolderId],
+    lazy: true,
   })
 
-  const isFirstPending = shallowRef(true)
-
-  watchOnce(status, (val) => {
-    if (val === 'success' || val === 'error') {
-      isFirstPending.value = false
-    }
-  })
+  const isFirstLoading = computed(() => pending.value && !data.value)
+  const isRefreshing = computed(() => pending.value && !!data.value)
 
   const files = computed(() => data.value?.files ?? [])
 
@@ -54,8 +50,10 @@ export function useFolderContents(folderId: MaybeRefOrGetter<string | null>) {
 
   return {
     files,
-    isPending: pending,
-    isFirstPending,
+    pending,
+    status,
+    isFirstLoading,
+    isRefreshing,
     error,
     refresh,
     patchFile,

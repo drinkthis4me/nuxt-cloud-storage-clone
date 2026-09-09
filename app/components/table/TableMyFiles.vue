@@ -26,6 +26,8 @@ const emit = defineEmits<{
   'file-deleted': [fileIds: SerializedFile['id'][]]
 }>()
 
+const isMounted = useMounted()
+
 const columns: TableColumn<SerializedFile>[] = [
   {
     id: 'select',
@@ -77,7 +79,8 @@ const columns: TableColumn<SerializedFile>[] = [
       },
     },
     cell: ({ row }) => {
-      const formatted = isoToLocalDateTime(row.original.updatedAt)
+      const dateString = row.original.updatedAt
+      const formatted = isMounted ? isoToLocalDateTime(dateString) : dateString
       return h('span', {}, formatted)
     },
   },
@@ -85,8 +88,9 @@ const columns: TableColumn<SerializedFile>[] = [
     accessorKey: 'size',
     header: 'Size',
     cell: ({ row }) => {
-      const res = row.original.isFolder ? '' : formatFileSize(row.original.size)
-      return h('span', {}, res)
+      return row.original.isFolder
+        ? null
+        : h('span', {}, formatFileSize(row.original.size))
     },
   },
   {
@@ -109,7 +113,7 @@ const columns: TableColumn<SerializedFile>[] = [
               onRowDoubleClick(row)
             },
           })
-        : h('span')
+        : null
     },
   },
 ]

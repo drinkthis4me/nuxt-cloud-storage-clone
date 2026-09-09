@@ -41,9 +41,9 @@ onMounted(() => {
     <template #header>
       <UDashboardNavbar>
         <template #title>
-          <h1 class="text-base capitalize">
+          <div class="text-base capitalize">
             Upload progress
-          </h1>
+          </div>
         </template>
       </UDashboardNavbar>
     </template>

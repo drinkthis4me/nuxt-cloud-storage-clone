@@ -40,9 +40,7 @@ export default defineNuxtConfig({
   },
 
   routeRules: {
-    'app/': { ssr: false },
-    'app/**': { ssr: false },
-    'share/**': { ssr: false },
+    '/': { prerender: true },
   },
 
   compatibilityDate: '2025-07-15',
@@ -50,6 +48,14 @@ export default defineNuxtConfig({
   eslint: {
     config: {
       stylistic: true,
+    },
+  },
+
+  icon: {
+    clientBundle: {
+      scan: {
+        globInclude: ['**/*.{vue,ts}'],
+      },
     },
   },
 })

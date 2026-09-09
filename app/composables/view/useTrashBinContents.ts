@@ -7,7 +7,6 @@ export function useTrashBinContents() {
     status: fileStatus.DELETED,
   }))
 
-  // FIXME: extract to getFetchKey util
   const {
     data,
     status,
@@ -17,14 +16,11 @@ export function useTrashBinContents() {
   } = useFetch<FileListResponse>('/api/files', {
     key: 'trash-bin',
     query,
+    lazy: true,
   })
 
-  const isFirstPending = shallowRef(true)
-  watchOnce(status, (val) => {
-    if (val === 'success' || val === 'error') {
-      isFirstPending.value = false
-    }
-  })
+  const isFirstLoading = computed(() => pending.value && !data.value)
+  const isRefreshing = computed(() => pending.value && !!data.value)
 
   const files = computed(() => data.value?.files ?? [])
 
@@ -51,10 +47,13 @@ export function useTrashBinContents() {
 
   return {
     files,
-    isPending: pending,
-    isFirstPending,
+    status,
+    pending,
+    isFirstLoading,
+    isRefreshing,
     error,
     refresh,
+
     patchFile,
   }
 }

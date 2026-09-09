@@ -44,7 +44,7 @@ async function handleChangeFolder(newId: string | null) {
 // Table
 const {
   files,
-  isPending,
+  isRefreshing,
   refresh,
 } = useFolderContents(currentParentFolderId)
 
@@ -84,7 +84,7 @@ async function onCreateFolderClick() {
         <div class="mt-4">
           <DialogMoveFileTable
             :files
-            :loading="isPending"
+            :loading="isRefreshing"
             @change-folder="handleChangeFolder"
           />
         </div>

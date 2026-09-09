@@ -38,6 +38,8 @@ function navigateToFolder(row: TableRow<SerializedFile>) {
   }
 }
 
+const isMounted = useMounted()
+
 const columns = computed<TableColumn<SerializedFile>[]>(() => [
   {
     accessorKey: 'name',
@@ -59,7 +61,8 @@ const columns = computed<TableColumn<SerializedFile>[]>(() => [
     accessorKey: 'updatedAt',
     header: 'Last Modified',
     cell: ({ row }) => {
-      const formatted = isoToLocalDateTime(row.original.updatedAt)
+      const dateString = row.original.updatedAt
+      const formatted = isMounted ? isoToLocalDateTime(dateString) : dateString
       return h('span', {}, formatted)
     },
   },
@@ -67,8 +70,9 @@ const columns = computed<TableColumn<SerializedFile>[]>(() => [
     accessorKey: 'size',
     header: 'Size',
     cell: ({ row }) => {
-      const res = row.original.isFolder ? '' : formatFileSize(row.original.size)
-      return h('span', {}, res)
+      return row.original.isFolder
+        ? null
+        : h('span', {}, formatFileSize(row.original.size))
     },
   },
   {
@@ -96,8 +100,7 @@ const columns = computed<TableColumn<SerializedFile>[]>(() => [
       },
     },
     cell: ({ row }) => {
-      const isFolder = row.original.isFolder
-      return isFolder
+      return row.original.isFolder
         ? h(UButton, {
             icon: 'i-lucide-arrow-right',
             color: 'neutral',
@@ -107,7 +110,7 @@ const columns = computed<TableColumn<SerializedFile>[]>(() => [
               navigateToFolder(row)
             },
           })
-        : ''
+        : null
     },
   },
 ])
